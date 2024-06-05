@@ -112,6 +112,15 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
     _destinationController.dispose();
   }
+  void _resetState() {
+    setState(() {
+      _destinationController.clear();
+      placesList.clear();
+      _showSuggest = true;
+      targetlocation_name = null;
+      destinationlatlng = null;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,11 +193,31 @@ targetlocation_name = placesList[index]['description'];
               ,
             const SizedBox(height: 20,),
 
-            ElevatedButton(onPressed: sourcelatlng==null?null:destinationlatlng==null?null:
-            (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>  ShowRestArea(sourceLatLng: sourcelatlng!,destinationLatLng: destinationlatlng!,),));
-            },
-             child: const Text("Find Rest Area")),
+            ElevatedButton(
+                onPressed: sourcelatlng == null
+                    ? null
+                    : destinationlatlng == null
+                    ? null
+                    : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShowRestArea(
+                        sourceLatLng: sourcelatlng!,
+                        destinationLatLng: destinationlatlng!,
+                      ),
+                    ),
+                  ).then((value) {
+                    // Reset state when returning from second page
+                    _resetState();
+                  });
+                },
+                child: const Text("Find Rest Area")),
+            // ElevatedButton(onPressed: sourcelatlng==null?null:destinationlatlng==null?null:
+            // (){
+            //   Navigator.push(context, MaterialPageRoute(builder: (context) =>  ShowRestArea(sourceLatLng: sourcelatlng!,destinationLatLng: destinationlatlng!,),));
+            // },
+            //  child: const Text("Find Rest Area")),
           ],
         ),
       ),
