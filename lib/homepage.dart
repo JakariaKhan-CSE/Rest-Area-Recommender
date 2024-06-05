@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
 
 
 
-    final String kPLACES_API_KEY = 'AIzaSyBTDqAhurKsynehyIXmC35IO272b3xdvX4';  //my api
+    final String kPLACES_API_KEY = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';  //my api
     String baseURL   = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$seassion_token';
 
@@ -105,6 +105,12 @@ class _HomePageState extends State<HomePage> {
       throw Exception('Failed to load data. Response not 200');
     }
 
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _destinationController.dispose();
   }
   @override
   Widget build(BuildContext context) {
