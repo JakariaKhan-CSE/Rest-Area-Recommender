@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,6 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<List<dynamic>> csvData = [];
   bool _showSuggest = true;
   TextEditingController _destinationController = TextEditingController();
   var uuid = const Uuid();
@@ -64,11 +67,20 @@ class _HomePageState extends State<HomePage> {
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
   }
+  // csv file convert to list
+Future<void> _loadCSV()async{
+final csvString = await rootBundle.loadString('assets/data/data.csv');
+List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
+setState(() {
+  csvData = rowAsListOfValues;
+  print(csvData);
+});
+}
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+_loadCSV();
     _destinationController.addListener(
       onChange
     );
