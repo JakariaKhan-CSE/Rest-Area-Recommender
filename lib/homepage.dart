@@ -73,8 +73,25 @@ final csvString = await rootBundle.loadString('assets/data/data.csv');
 List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
 setState(() {
   csvData = rowAsListOfValues;
-  print(csvData);
+
+  // print(csvData);
+  // print(csvData.length);
+  // print(csvData[0].length);
 });
+if(csvData.length > 0)
+for(int i=1; i<csvData.length; i++)
+{
+  for(int j=0; j<csvData[i].length; j++)
+  {
+    if(csvData[i][j] == 'Yes')
+    {
+      print(csvData[0][j]);  // yes column title print
+    }
+  }
+  print(csvData[i][9]);
+  print(csvData[i][10]);
+  print(csvData[i][11]);
+}
 }
   @override
   void initState() {
