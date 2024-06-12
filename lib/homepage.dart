@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> {
   }
   // csv file convert to list
 Future<void> _loadCSV()async{
+
 final csvString = await rootBundle.loadString('assets/data/data.csv');
 List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
 setState(() {
@@ -83,14 +84,20 @@ for(int i=1; i<csvData.length; i++)
 {
   for(int j=0; j<csvData[i].length; j++)
   {
-    if(csvData[i][j] == 'Yes')
+    if(j==10 || j== 11)
+      continue;
+
+   if(csvData[i][j].trim().toLowerCase() == 'yes')
     {
+
       print(csvData[0][j]);  // yes column title print
     }
+
   }
   print(csvData[i][9]);
-  print(csvData[i][10]);
-  print(csvData[i][11]);
+
+  // print(csvData[i][10]);
+  // print(csvData[i][11]);
 }
 }
   @override
@@ -234,6 +241,7 @@ targetlocation_name = placesList[index]['description'];
                       builder: (context) => ShowRestArea(
                         sourceLatLng: sourcelatlng!,
                         destinationLatLng: destinationlatlng!,
+                        csvListData: csvData,
                       ),
                     ),
                   ).then((value) {
