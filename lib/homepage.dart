@@ -149,7 +149,7 @@ _loadCSV();
     String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$seassion_token';
 
     var response = await http.get(Uri.parse(request));
-    print(response.body.toString());
+    // print(response.body.toString());
     if(response.statusCode == 200)
     {
       setState(() {
@@ -270,11 +270,7 @@ targetlocation_name = placesList[index]['description'];
                   });
                 },
                 child: const Text("Find Rest Area")),
-            // ElevatedButton(onPressed: sourcelatlng==null?null:destinationlatlng==null?null:
-            // (){
-            //   Navigator.push(context, MaterialPageRoute(builder: (context) =>  ShowRestArea(sourceLatLng: sourcelatlng!,destinationLatLng: destinationlatlng!,),));
-            // },
-            //  child: const Text("Find Rest Area")),
+
           ],
         ),
       ),

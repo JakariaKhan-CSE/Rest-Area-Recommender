@@ -27,6 +27,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
   ];
 
   Future<Uint8List?> getByteFromAssets(String path, int width)async{
+    print('this function call for making custom icon');
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetHeight: width);
     ui.FrameInfo fi = await codec.getNextFrame();
@@ -73,10 +74,13 @@ class _ShowRestAreaState extends State<ShowRestArea> {
       infoWindow: const InfoWindow(title: 'Destination'),
     ));
 
-    for(int i=0; i<widget.csvListData.length; i++)
+    for(int i=1, j=0; i<widget.csvListData.length; i++, j++)
       {
-        LatLng point = widget.checkPoints[i];
+        // print('call function which is check near point');
+        LatLng point = widget.checkPoints[j];
+        // print(point);
         if (_isPointNearPolyline(point)) {
+          print('Find near by point');
           //public toilet
           if(widget.csvListData[i][0].trim().toLowerCase() == 'yes'){
             // Concatenate facility information
@@ -292,7 +296,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
   }
 
   bool _isPointNearPolyline(LatLng point) {
-    const double tolerance = 1.0; // Tolerance in kilometers
+    const double tolerance = 5.0; // Tolerance in kilometers
     for (int i = 0; i < polylineCoordinates.length - 1; i++) {
       LatLng start = polylineCoordinates[i];
       LatLng end = polylineCoordinates[i + 1];
