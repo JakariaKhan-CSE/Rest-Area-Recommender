@@ -319,7 +319,7 @@ setState(() {
 
   bool _isPointNearPolyline(LatLng point) {
 
-    const double tolerance = 5.0; // Tolerance in kilometers (20 kilometer)
+    const double tolerance = 1.0; // Tolerance in kilometers (20 kilometer)
     for (int i = 0; i < polylineCoordinates.length - 1; i++) {
       LatLng start = polylineCoordinates[i];
       LatLng end = polylineCoordinates[i + 1];
