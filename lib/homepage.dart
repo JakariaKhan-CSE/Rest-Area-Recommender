@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<List<dynamic>> csvData = [];
+  List<LatLng> checkPoints = [];
   bool _showSuggest = true;
   TextEditingController _destinationController = TextEditingController();
   var uuid = const Uuid();
@@ -79,26 +80,44 @@ setState(() {
   // print(csvData.length);
   // print(csvData[0].length);
 });
-if(csvData.length > 0)
-for(int i=1; i<csvData.length; i++)
-{
-  for(int j=0; j<csvData[i].length; j++)
+if(csvData.length>0)
   {
-    if(j==10 || j== 11)
-      continue;
+    // make new list and store only latlng value
+    for(int i=1; i<csvData.length; i++)
+      {
 
-   if(csvData[i][j].trim().toLowerCase() == 'yes')
-    {
+            checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
 
-      print(csvData[0][j]);  // yes column title print
-    }
-
+      }
   }
-  print(csvData[i][9]);
+setState(() {
 
-  // print(csvData[i][10]);
-  // print(csvData[i][11]);
-}
+});
+// see latlng originally store or not
+// for(int i=0; i<checkPoints.length; i++)
+//   {
+//     print(checkPoints[i]);
+//   }
+// if(csvData.length > 0)
+// for(int i=1; i<csvData.length; i++)
+// {
+//   for(int j=0; j<csvData[i].length; j++)
+//   {
+//     if(j==10 || j== 11)
+//       continue;
+//
+//    if(csvData[i][j].trim().toLowerCase() == 'yes')
+//     {
+//
+//       print(csvData[0][j]);  // yes column title print
+//     }
+//
+//   }
+//   print(csvData[i][9]);
+//
+//   // print(csvData[i][10]);
+//   // print(csvData[i][11]);
+// }
 }
   @override
   void initState() {
@@ -172,9 +191,9 @@ sourcelatlng!=null?Padding(
   child: Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
-      Text('${district}'),
+      Text('${district}',style: TextStyle(color: Colors.blue),),
       const Icon(Icons.arrow_forward,size: 20,),
-      targetlocation_name!=null?Text('${targetlocation_name}'):Container()
+      targetlocation_name!=null?Text('${targetlocation_name}',style: TextStyle(color: Colors.pink),):Container()
     ],
   ),
 ):Container(),
@@ -242,6 +261,7 @@ targetlocation_name = placesList[index]['description'];
                         sourceLatLng: sourcelatlng!,
                         destinationLatLng: destinationlatlng!,
                         csvListData: csvData,
+                        checkPoints: checkPoints,
                       ),
                     ),
                   ).then((value) {

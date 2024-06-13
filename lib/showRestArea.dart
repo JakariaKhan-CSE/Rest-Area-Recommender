@@ -1,12 +1,15 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math';
 class ShowRestArea extends StatefulWidget {
   final List<List<dynamic>> csvListData;
+  final List<LatLng> checkPoints;
   LatLng sourceLatLng;
   LatLng destinationLatLng;
-  ShowRestArea({super.key, required this.sourceLatLng, required this.destinationLatLng, required this.csvListData});
+  ShowRestArea({super.key, required this.sourceLatLng, required this.destinationLatLng, required this.csvListData, required this.checkPoints});
 
   @override
   State<ShowRestArea> createState() => _ShowRestAreaState();
@@ -15,28 +18,29 @@ class ShowRestArea extends StatefulWidget {
 class _ShowRestAreaState extends State<ShowRestArea> {
   GoogleMapController? _controller;
   List<LatLng> polylineCoordinates = [];
-  List<Marker> markers = [];
+  List<Marker> _markers = [];
+  Uint8List? markerImage;
 
-
-  // Get this latlng point from data
-  final List<LatLng> checkPoints = [
-    const LatLng(23.209257, 89.172331),
-    const LatLng(23.231974, 89.132162),
-    const LatLng(23.234497, 89.098173),
-    const LatLng(23.249837903009773, 89.05878491113003),
-    const LatLng(23.255007, 89.044347),
-    const LatLng(23.259818, 89.025893),
-    const LatLng(23.318792, 88.975573),
-    const LatLng(23.34570388563941, 88.91695626649748),
-    const LatLng(23.126896, 89.338109),
-    const LatLng(23.085845, 89.359051),
+  List<String> iconImage = ['assets/icon/public_toilet.png','assets/icon/hospital_moon.png',
+  'assets/icon/park.png','assets/icon/mall.png', 'assets/icon/hotel.png', 'assets/icon/restaurant.png',
+    'assets/icon/petrol_station.png','assets/icon/mosque.png'
   ];
+
+  Future<Uint8List?> getByteFromAssets(String path, int width)async{
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetHeight: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))?.buffer.asUint8List();
+
+  }
 
   @override
   void initState() {
     super.initState();
+
     _setPolyline();
   }
+
 
   _setPolyline() async {
     PolylinePoints polylinePoints = PolylinePoints();
@@ -56,28 +60,235 @@ class _ShowRestAreaState extends State<ShowRestArea> {
     setState(() {});
   }
 
-  _addMarkers() {
-    markers.add(Marker(
+  _addMarkers() async {
+    _markers.add(Marker(
       markerId: const MarkerId('source'),
       position: widget.sourceLatLng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),  // source color icon blue
       infoWindow: const InfoWindow(title: 'Source'),
     ));
-    markers.add(Marker(
+    _markers.add(Marker(
       markerId: const MarkerId('destination'),
       position: widget.destinationLatLng,
       infoWindow: const InfoWindow(title: 'Destination'),
     ));
 
-    for (LatLng point in checkPoints) {
-      if (_isPointNearPolyline(point)) {
-        markers.add(Marker(
-          markerId: MarkerId(point.toString()),
-          position: point,
-          infoWindow: const InfoWindow(title: 'Check Point'),
-        ));
+    for(int i=0; i<widget.csvListData.length; i++)
+      {
+        LatLng point = widget.checkPoints[i];
+        if (_isPointNearPolyline(point)) {
+          //public toilet
+          if(widget.csvListData[i][0].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[0], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+            position: point,
+              icon: BitmapDescriptor.fromBytes(markerIcon!),
+              infoWindow:  InfoWindow(
+                title: '${placename}',
+                snippet: facilities
+              )
+            ));
+          }
+          else if(widget.csvListData[i][1].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[1], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][2].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[2], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][3].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[3], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][4].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[4], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][5].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[5], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][6].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[6], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][7].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+            final Uint8List? markerIcon = await getByteFromAssets(iconImage[7], 50);
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.fromBytes(markerIcon!),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+          else  if(widget.csvListData[i][8].trim().toLowerCase() == 'yes'){
+            // Concatenate facility information
+            String facilities = '';
+            String placename = widget.csvListData[i][9];
+
+            for (int j = 14; j <= 19; j++) {
+              if (widget.csvListData[i][j].trim().isNotEmpty) {
+                facilities += '${widget.csvListData[i][j].trim()}, ';
+              }
+            }
+            // Remove the trailing comma and space
+            if (facilities.isNotEmpty) {
+              facilities = facilities.substring(0, facilities.length - 2);
+            }
+            _markers.add(Marker(markerId: MarkerId(point.toString()),
+                position: point,
+                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose),
+                infoWindow:  InfoWindow(
+                    title: '${placename}',
+                    snippet: facilities
+                )
+            ));
+          }
+
+        }
       }
-    }
+
   }
 
   bool _isPointNearPolyline(LatLng point) {
@@ -155,7 +366,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
           target: widget.sourceLatLng,
           zoom: 13,
         ),
-        markers: Set<Marker>.of(markers),
+        markers: Set<Marker>.of(_markers),
         polylines: {
           Polyline(
             polylineId: const PolylineId('route'),
