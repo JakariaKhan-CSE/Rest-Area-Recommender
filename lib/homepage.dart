@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +33,8 @@ class _HomePageState extends State<HomePage> {
   String? targetlocation_name;
   LatLng? sourcelatlng;
   LatLng? destinationlatlng;
+  late StreamSubscription<List<ConnectivityResult>> connectivitySubscription;
+  late StreamSubscription<ServiceStatus> locationServiceSubscription;
 
   Future<Position> _currentPosition() async {
     bool serviceEnabled;
@@ -97,7 +101,7 @@ try{
 
          checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
       } catch (e) {
-        print('Error processing row $i: $e');
+        debugPrint('Error processing row $i: $e');
       }
 
     }
@@ -109,41 +113,41 @@ try{
 setState(() {
 
 });
-// see latlng originally store or not
-// for(int i=0; i<checkPoints.length; i++)
-//   {
-//     print(checkPoints[i]);
-//   }
-// if(csvData.length > 0)
-// for(int i=1; i<csvData.length; i++)
-// {
-//   for(int j=0; j<csvData[i].length; j++)
-//   {
-//     if(j==10 || j== 11)
-//       continue;
-//
-//    if(csvData[i][j].trim().toLowerCase() == 'yes')
-//     {
-//
-//       print(csvData[0][j]);  // yes column title print
-//     }
-//
-//   }
-//   print(csvData[i][9]);
-//
-//   // print(csvData[i][10]);
-//   // print(csvData[i][11]);
-// }
+
 }
+internetConnectionCheck()
+{
+  // Listen for internet connectivity changes
+  connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
+    if (result.contains(ConnectivityResult.none)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection')));
+    }
+  });
+}
+  locationServiceCheck()
+  {
+    // Listen for location service status changes
+    locationServiceSubscription = Geolocator.getServiceStatusStream().listen((ServiceStatus status){
+      if(status == ServiceStatus.disabled)
+      {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location services are disabled')));
+      }
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 _loadCSV();
-print('after calling loadcsv function');
+
     _destinationController.addListener(
       onChange
     );
+   internetConnectionCheck();
+   locationServiceCheck();
+
+
+
   }
   void onChange(){
     // print('onChange called');
@@ -183,6 +187,8 @@ print('after calling loadcsv function');
     // TODO: implement dispose
     super.dispose();
     _destinationController.dispose();
+    connectivitySubscription.cancel();
+    locationServiceSubscription.cancel();
   }
   void _resetState() {
     setState(() {
@@ -208,14 +214,16 @@ sourcelatlng!=null?Padding(
   child: Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
-      Text('${district}',style: TextStyle(color: Colors.blue),),
+      Text('${district}',style: const TextStyle(color: Colors.blue),),
       const Icon(Icons.arrow_forward,size: 20,),
-      targetlocation_name!=null?Text('${targetlocation_name}',style: TextStyle(color: Colors.pink),):Container()
+      targetlocation_name!=null?Text('${targetlocation_name}',style: const TextStyle(color: Colors.pink),):Container()
     ],
   ),
 ):Container(),
             const SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
+              locationServiceCheck();
+              internetConnectionCheck();
               _currentPosition().then((value) async {
                 List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
                 var firstAddress = placemarks[0];
@@ -271,6 +279,8 @@ targetlocation_name = placesList[index]['description'];
                     : destinationlatlng == null
                     ? null
                     : () {
+
+                  internetConnectionCheck();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
