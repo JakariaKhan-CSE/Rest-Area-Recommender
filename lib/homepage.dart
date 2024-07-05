@@ -71,24 +71,40 @@ class _HomePageState extends State<HomePage> {
   // csv file convert to list
 Future<void> _loadCSV()async{
 
-final csvString = await rootBundle.loadString('assets/data/data.csv');
-List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
-setState(() {
-  csvData = rowAsListOfValues;
+try{
+  final csvString = await rootBundle.loadString('assets/another_data/final_data.csv');
 
-  // print(csvData);
-  // print(csvData.length);
-  // print(csvData[0].length);
-});
-if(csvData.length>0)
+  List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
+  setState(() {
+    csvData = rowAsListOfValues;
+
+    //print(csvData);
+    // print(csvData.length);
+    // print(csvData[0].length);
+  });
+  if(csvData.length>0)
   {
+
     // make new list and store only latlng value
     for(int i=1; i<csvData.length; i++)
-      {
+    {
 
-            checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
+      // checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
+      try {
+        // print("LatLng store*************");
+        // print(csvData[i][10]);
+        // print(csvData[i][11]);
 
+         checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
+      } catch (e) {
+        print('Error processing row $i: $e');
       }
+
+    }
+  }
+} catch(e)
+  {
+    debugPrint('***************error is $e');
   }
 setState(() {
 
@@ -124,6 +140,7 @@ setState(() {
     // TODO: implement initState
     super.initState();
 _loadCSV();
+print('after calling loadcsv function');
     _destinationController.addListener(
       onChange
     );
@@ -260,7 +277,7 @@ targetlocation_name = placesList[index]['description'];
                       builder: (context) => ShowRestArea(
 
                         sourceLatLng: sourcelatlng!,
-                        // sourceLatLng: LatLng(23.465439278851417, 89.2385597522851),
+                        //sourceLatLng: LatLng(23.170664, 89.212418),
                         destinationLatLng: destinationlatlng!,
                         csvListData: csvData,
                         checkPoints: checkPoints,

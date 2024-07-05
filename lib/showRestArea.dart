@@ -79,6 +79,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
 
       LatLng point = widget.checkPoints[j];
 
+
       if (_isPointNearPolyline(point)) {
 
         //public toilet
