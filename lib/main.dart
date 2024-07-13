@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rest_area_recommended/homepage.dart';
 import 'package:rest_area_recommended/splash_screen.dart';
 void main()=>runApp(const myApp());
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:csv/csv.dart';
@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<List<dynamic>> csvData = [];
   List<LatLng> checkPoints = [];
   bool _showSuggest = true;
-  TextEditingController _destinationController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
   var uuid = const Uuid();
   String seassion_token = "123456";
   List<dynamic> placesList = [];
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   LatLng? sourcelatlng;
   LatLng? destinationlatlng;
   late StreamSubscription<List<ConnectivityResult>> connectivitySubscription;
-  late StreamSubscription<ServiceStatus> locationServiceSubscription;
+  // late StreamSubscription<ServiceStatus> locationServiceSubscription;
 
   Future<Position> _currentPosition() async {
     bool serviceEnabled;
@@ -46,7 +46,8 @@ class _HomePageState extends State<HomePage> {
       // Location services are not enabled don't continue
       // accessing the position and request users of the
       // App to enable the location services.
-      return Future.error('Location services are disabled.');
+       Future.error('Location services are disabled.');
+       openAppSettings();
     }
 
     permission = await Geolocator.checkPermission();
@@ -58,13 +59,13 @@ class _HomePageState extends State<HomePage> {
         // Android's shouldShowRequestPermissionRationale
         // returned true. According to Android guidelines
         // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+         Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
-      return Future.error(
+       Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
@@ -86,7 +87,7 @@ try{
     // print(csvData.length);
     // print(csvData[0].length);
   });
-  if(csvData.length>0)
+  if(csvData.isNotEmpty)
   {
 
     // make new list and store only latlng value
@@ -124,16 +125,7 @@ internetConnectionCheck()
     }
   });
 }
-  locationServiceCheck()
-  {
-    // Listen for location service status changes
-    locationServiceSubscription = Geolocator.getServiceStatusStream().listen((ServiceStatus status){
-      if(status == ServiceStatus.disabled)
-      {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location services are disabled')));
-      }
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -144,20 +136,13 @@ _loadCSV();
       onChange
     );
    internetConnectionCheck();
-   locationServiceCheck();
+
 
 
 
   }
   void onChange(){
     // print('onChange called');
-    if(seassion_token == null)
-    {
-      setState(() {
-        seassion_token = uuid.v4();
-
-      });
-    }
     getSuggestion(_destinationController.text);
   }
 
@@ -165,9 +150,9 @@ _loadCSV();
 
 
 
-    final String kPLACES_API_KEY = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';  //my api
+    const String kplacesApiKey = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';  //my api
     String baseURL   = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$seassion_token';
+    String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$seassion_token';
 
     var response = await http.get(Uri.parse(request));
     // print(response.body.toString());
@@ -188,7 +173,7 @@ _loadCSV();
     super.dispose();
     _destinationController.dispose();
     connectivitySubscription.cancel();
-    locationServiceSubscription.cancel();
+    // locationServiceSubscription.cancel();
   }
   void _resetState() {
     setState(() {
@@ -214,15 +199,15 @@ sourcelatlng!=null?Padding(
   child: Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
-      Text('${district}',style: const TextStyle(color: Colors.blue),),
+      Text('$district',style: const TextStyle(color: Colors.blue),),
       const Icon(Icons.arrow_forward,size: 20,),
-      targetlocation_name!=null?Text('${targetlocation_name}',style: const TextStyle(color: Colors.pink),):Container()
+      targetlocation_name!=null?Text('$targetlocation_name',style: const TextStyle(color: Colors.pink),):Container()
     ],
   ),
 ):Container(),
             const SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
-              locationServiceCheck();
+
               internetConnectionCheck();
               _currentPosition().then((value) async {
                 List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
@@ -234,7 +219,7 @@ sourcelatlng!=null?Padding(
                   sourcelatlng = LatLng(value.latitude, value.longitude);
 
                   //locality = firstAddress.locality != null?firstAddress.locality:secondAddress.locality!=null?secondAddress.locality:thirdAddress.locality;
-                  district = firstAddress.subAdministrativeArea!=null?firstAddress.subAdministrativeArea:secondAddress.subAdministrativeArea;
+                  district = firstAddress.subAdministrativeArea ?? secondAddress.subAdministrativeArea;
 
                 });
               });
@@ -299,6 +284,7 @@ targetlocation_name = placesList[index]['description'];
                   });
                 },
                 child: const Text("Find Rest Area")),
+            const Spacer()
 
           ],
         ),

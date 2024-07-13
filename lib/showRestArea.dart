@@ -103,7 +103,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Public Toilet | ${placename}',
+                  title: 'Public Toilet | $placename',
                   snippet: facilities
               )
           ));
@@ -129,7 +129,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Hospital | ${placename}',
+                  title: 'Hospital | $placename',
                   snippet: facilities
               )
           ));
@@ -154,7 +154,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Park | ${placename}',
+                  title: 'Park | $placename',
                   snippet: facilities
               )
           ));
@@ -179,7 +179,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Shopping mall | ${placename}',
+                  title: 'Shopping mall | $placename',
                   snippet: facilities
               )
           ));
@@ -204,7 +204,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Hotel | ${placename}',
+                  title: 'Hotel | $placename',
                   snippet: facilities
               )
           ));
@@ -229,7 +229,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Restaurant | ${placename}',
+                  title: 'Restaurant | $placename',
                   snippet: facilities
               )
           ));
@@ -254,7 +254,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Petrol Station | ${placename}',
+                  title: 'Petrol Station | $placename',
                   snippet: facilities
               )
           ));
@@ -279,7 +279,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow:  InfoWindow(
-                  title: 'Mosque | ${placename}',
+                  title: 'Mosque | $placename',
                   snippet: facilities
               )
           ));
@@ -304,7 +304,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               position: point,
               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose),
               infoWindow:  InfoWindow(
-                  title: '${placename}',
+                  title: placename,
                   snippet: facilities
               )
           ));
@@ -348,8 +348,8 @@ setState(() {
     double D = y2 - y1;
 
     double dot = A * C + B * D;
-    double len_sq = C * C + D * D;
-    double param = (len_sq != 0) ? dot / len_sq : -1;
+    double lenSq = C * C + D * D;
+    double param = (lenSq != 0) ? dot / lenSq : -1;
 
     double xx, yy;
 
@@ -390,7 +390,7 @@ setState(() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Rest Area Recommended"),centerTitle: true,elevation: 10,),
+      appBar: AppBar(title: const Text("Rest Area Recommended"),centerTitle: true,elevation: 10,),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: widget.sourceLatLng,
