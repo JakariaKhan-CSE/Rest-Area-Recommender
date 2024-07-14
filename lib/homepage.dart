@@ -103,15 +103,15 @@ class _HomePageState extends State<HomePage> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Internet Connection Alert'),
-            content: Text('You have no Internet Connection. Turn on the internet connection to use this app'),
+            title: const Text('Internet Connection Alert'),
+            content: const Text('You have no Internet Connection. Turn on the internet connection to use this app'),
             backgroundColor: Colors.grey,
             actions: [
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Ok'),
+                child: const Text('Ok'),
               ),
             ],
           ),
