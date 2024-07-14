@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   LatLng? sourcelatlng;
   LatLng? destinationlatlng;
   late StreamSubscription<List<ConnectivityResult>> connectivitySubscription;
-  // late StreamSubscription<ServiceStatus> locationServiceSubscription;
+
 
   Future<Position> _currentPosition() async {
     bool serviceEnabled;
@@ -121,7 +121,18 @@ internetConnectionCheck()
   // Listen for internet connectivity changes
   connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
     if (result.contains(ConnectivityResult.none)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection')));
+      showDialog(context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Internet Connection Alert'),
+            content: Text('You have no Internet Connection.Turn On internet connection for using this app'),
+            backgroundColor: Colors.grey,
+            actions: [
+              ElevatedButton(onPressed: (){
+               Navigator.pop(context);
+              }, child: Text('Ok'))
+            ],
+          ),);
+      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection')));
     }
   });
 }
@@ -208,7 +219,7 @@ sourcelatlng!=null?Padding(
             const SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
 
-              internetConnectionCheck();
+              // internetConnectionCheck();
               _currentPosition().then((value) async {
                 List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
                 var firstAddress = placemarks[0];
