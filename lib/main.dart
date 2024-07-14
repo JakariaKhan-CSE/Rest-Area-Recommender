@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:rest_area_recommended/splash_screen.dart';
-void main()=>runApp(const myApp());
+
+void main() async{
+  await Hive.initFlutter();
+  await Hive.openBox('destinations');
+  runApp(const myApp());
+}
 
 class myApp extends StatelessWidget {
   const myApp({super.key});
