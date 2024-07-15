@@ -247,6 +247,7 @@ class _HomePageState extends State<HomePage> {
                 child: TextFormField(
                   onTap: (){
                     sourceTextField = true;
+                    destinationTextField = false;
                   },
                   controller: _sourceController,
                   decoration: InputDecoration(
@@ -292,6 +293,7 @@ class _HomePageState extends State<HomePage> {
                 child: TextFormField(
                   onTap: (){
                     destinationTextField = true;
+                    sourceTextField = false;
                   },
                   controller: _destinationController,
                   decoration: InputDecoration(
