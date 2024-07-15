@@ -30,6 +30,8 @@ class _HomePageState extends State<HomePage> {
   var uuid = const Uuid();
   String session_token1 = "123456";
   String session_token2 = "789546";
+  bool sourceTextField = false;
+  bool destinationTextField = false;
   List<dynamic> placesListSource = [];
   List<dynamic> placesListTarget = [];
   String? district;
@@ -208,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text('$district', style: const TextStyle(color: Colors.blue)),
+                    Text('$sourcelocation_name', style: const TextStyle(color: Colors.blue)),
                     const Icon(Icons.arrow_forward, size: 20),
                     targetlocation_name != null
                         ? Text('$targetlocation_name', style: const TextStyle(color: Colors.pink))
@@ -222,6 +224,7 @@ class _HomePageState extends State<HomePage> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange.withOpacity(0.7), foregroundColor: Colors.black),
                 onPressed: () {
+                  _sourceController.clear();
                   _currentPosition().then((value) async {
                     List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
                     var firstAddress = placemarks[0];
@@ -230,7 +233,7 @@ class _HomePageState extends State<HomePage> {
 
                     setState(() {
                       sourcelatlng = LatLng(value.latitude, value.longitude);
-                      district = firstAddress.subAdministrativeArea ?? secondAddress.subAdministrativeArea;
+                      sourcelocation_name = firstAddress.subAdministrativeArea ?? secondAddress.subAdministrativeArea;
                     });
                   });
                 },
@@ -242,6 +245,9 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextFormField(
+                  onTap: (){
+                    sourceTextField = true;
+                  },
                   controller: _sourceController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -251,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              if (_showSuggest)
+              if (_showSuggest && sourceTextField)
                 SizedBox(
                   height: 200, // Adjust height according to your needs
                   child: ListView.builder(
@@ -284,6 +290,9 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextFormField(
+                  onTap: (){
+                    destinationTextField = true;
+                  },
                   controller: _destinationController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -293,7 +302,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              if (_showSuggest1)
+              if (_showSuggest1 && destinationTextField)
                 SizedBox(
                   height: 200, // Adjust height according to your needs
                   child: ListView.builder(
@@ -318,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange.withOpacity(0.7), foregroundColor: Colors.black),
