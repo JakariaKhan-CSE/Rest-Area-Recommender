@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getSuggestion(String input) async {
     if (destinationBox.containsKey(input)) {
-      print('Save free credit. Because i use local database');
+      // print('Save free credit. Because i use local database');
       var storedData = destinationBox.get(input);
       setState(() {
         placesList = [storedData];
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
         targetlocation_name = storedData['description'];
       });
     } else {
-      print('Not Save free credit. Because i use google place api');
+      // print('Not Save free credit. Because i use google place api');
       const String kplacesApiKey = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';
       String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
       String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$session_token';
