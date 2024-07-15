@@ -24,10 +24,14 @@ class _HomePageState extends State<HomePage> {
   List<List<dynamic>> csvData = [];
   List<LatLng> checkPoints = [];
   bool _showSuggest = true;
+  bool _showSuggest1 = true;
   final TextEditingController _destinationController = TextEditingController();
+  final TextEditingController _sourceController = TextEditingController();
   var uuid = const Uuid();
-  String session_token = "123456";
-  List<dynamic> placesList = [];
+  String session_token1 = "123456";
+  String session_token2 = "789546";
+  List<dynamic> placesListSource = [];
+  List<dynamic> placesListTarget = [];
   String? district;
   String? sourcelocation_name;
   String? targetlocation_name;
@@ -42,7 +46,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadCSV();
-    _destinationController.addListener(onChange);
+    _destinationController.addListener(() => onChangeTarget(_destinationController.text));
+    _sourceController.addListener(() => onChangeSource(_sourceController.text));
     internetConnectionCheck();
 
     // Initialize Hive box
@@ -120,51 +125,66 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void onChange() {
-    getSuggestion(_destinationController.text);
+  void onChangeSource(String input) {
+    getSuggestionSource(input);
+  }
+  void onChangeTarget(String input) {
+    getSuggestionTarget(input);
   }
 
-  Future<void> getSuggestion(String input) async {
-    if (destinationBox.containsKey(input)) {
-      // print('Save free credit. Because i use local database');
-      var storedData = destinationBox.get(input);
-      setState(() {
-        placesList = [storedData];
-        _showSuggest = false;
-        destinationlatlng = LatLng(storedData['lat'], storedData['lng']);
-        targetlocation_name = storedData['description'];
-      });
-    } else {
-      // print('Not Save free credit. Because i use google place api');
+  Future<void> getSuggestionSource(String input) async {
+
       const String kplacesApiKey = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';
       String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-      String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$session_token';
+      String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$session_token1';
 
       var response = await http.get(Uri.parse(request));
       if (response.statusCode == 200) {
         setState(() {
-          placesList = jsonDecode(response.body.toString())['predictions'];
+          placesListSource = jsonDecode(response.body.toString())['predictions'];
         });
       } else {
         throw Exception('Failed to load data. Response not 200');
       }
+
+  }
+  Future<void> getSuggestionTarget(String input) async {
+
+    const String kplacesApiKey = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$session_token2';
+
+    var response = await http.get(Uri.parse(request));
+    if (response.statusCode == 200) {
+      setState(() {
+        placesListTarget = jsonDecode(response.body.toString())['predictions'];
+      });
+    } else {
+      throw Exception('Failed to load data. Response not 200');
     }
+
   }
 
   @override
   void dispose() {
     super.dispose();
     _destinationController.dispose();
+    _sourceController.dispose();
     connectivitySubscription.cancel();
   }
 
   void _resetState() {
     setState(() {
       _destinationController.clear();
-      placesList.clear();
+      _sourceController.clear();
+      placesListSource.clear();
+      placesListTarget.clear();
       _showSuggest = true;
+      _showSuggest1 = true;
       targetlocation_name = null;
+      sourcelocation_name = null;
       destinationlatlng = null;
+      sourcelatlng = null;
     });
   }
 
@@ -176,106 +196,156 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         elevation: 10,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            sourcelatlng != null
-                ? Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('$district', style: const TextStyle(color: Colors.blue)),
-                  const Icon(Icons.arrow_forward, size: 20),
-                  targetlocation_name != null
-                      ? Text('$targetlocation_name', style: const TextStyle(color: Colors.pink))
-                      : Container(),
-                ],
-              ),
-            )
-                : Container(),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _currentPosition().then((value) async {
-                  List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
-                  var firstAddress = placemarks[0];
-                  var secondAddress = placemarks[1];
-                  var thirdAddress = placemarks[2];
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              sourcelatlng != null
+                  ? Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('$district', style: const TextStyle(color: Colors.blue)),
+                    const Icon(Icons.arrow_forward, size: 20),
+                    targetlocation_name != null
+                        ? Text('$targetlocation_name', style: const TextStyle(color: Colors.pink))
+                        : Container(),
+                  ],
+                ),
+              )
+                  : Container(),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange.withOpacity(0.7), foregroundColor: Colors.black),
+                onPressed: () {
+                  _currentPosition().then((value) async {
+                    List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
+                    var firstAddress = placemarks[0];
+                    var secondAddress = placemarks[1];
+                    var thirdAddress = placemarks[2];
 
-                  setState(() {
-                    sourcelatlng = LatLng(value.latitude, value.longitude);
-                    district = firstAddress.subAdministrativeArea ?? secondAddress.subAdministrativeArea;
+                    setState(() {
+                      sourcelatlng = LatLng(value.latitude, value.longitude);
+                      district = firstAddress.subAdministrativeArea ?? secondAddress.subAdministrativeArea;
+                    });
                   });
-                });
-              },
-              child: const Text("Get Current Location"),
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _destinationController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                hintText: "Type target place name",
+                },
+                child: const Text("Get Current Location"),
               ),
-            ),
-            if (_showSuggest)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: placesList.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () async {
-                        List<Location> locations = await locationFromAddress(placesList[index]['description']);
-                        _destinationController.text = placesList[index]['description'];
-                        setState(() {
-                          _showSuggest = false;
-                          destinationlatlng = LatLng(locations.first.latitude, locations.first.longitude);
-                          targetlocation_name = placesList[index]['description'];
-
-                          // Save to local storage
-                          destinationBox.put(targetlocation_name, {
-                            'description': targetlocation_name,
-                            'lat': locations.first.latitude,
-                            'lng': locations.first.longitude,
-                          });
-                        });
-                      },
-                      child: ListTile(title: Text(placesList[index]['description'])),
-                    );
-                  },
-                ),
-              ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: sourcelatlng == null
-                  ? null
-                  : destinationlatlng == null
-                  ? null
-                  : () {
-                internetConnectionCheck();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ShowRestArea(
-                      sourceLatLng: sourcelatlng!,
-                      destinationLatLng: destinationlatlng!,
-                      csvListData: csvData,
-                      checkPoints: checkPoints,
+              const SizedBox(height: 30),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(10)),
+                child: TextFormField(
+                  controller: _sourceController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    hintText: "Type source place name",
                   ),
-                ).then((value) {
-                  _resetState();
-                });
-              },
-              child: const Text("Find Rest Area"),
-            ),
-            const Spacer(),
-          ],
+                ),
+              ),
+              if (_showSuggest)
+                SizedBox(
+                  height: 200, // Adjust height according to your needs
+                  child: ListView.builder(
+                    itemCount: placesListSource.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () async {
+                          List<Location> locations = await locationFromAddress(placesListSource[index]['description']);
+                          if (_sourceController.text.isNotEmpty) {
+                            _sourceController.text = placesListSource[index]['description'];
+                            setState(() {
+                              _showSuggest = false;
+                              sourcelatlng = LatLng(locations.first.latitude, locations.first.longitude);
+                              sourcelocation_name = placesListSource[index]['description'];
+
+
+                            });
+                          }
+
+
+                        },
+                        child: ListTile(title: Text(placesListSource[index]['description'])),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(10)),
+                child: TextFormField(
+                  controller: _destinationController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    hintText: "Type target place name",
+                  ),
+                ),
+              ),
+              if (_showSuggest1)
+                SizedBox(
+                  height: 200, // Adjust height according to your needs
+                  child: ListView.builder(
+                    itemCount: placesListTarget.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () async {
+                          List<Location> locations = await locationFromAddress(placesListTarget[index]['description']);
+                          if (_destinationController.text.isNotEmpty) {
+                            _destinationController.text = placesListTarget[index]['description'];
+                            setState(() {
+                              _showSuggest1 = false;
+                              destinationlatlng = LatLng(locations.first.latitude, locations.first.longitude);
+                              targetlocation_name = placesListTarget[index]['description'];
+
+
+                            });
+                          }
+                        },
+                        child: ListTile(title: Text(placesListTarget[index]['description'])),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange.withOpacity(0.7), foregroundColor: Colors.black),
+                onPressed: sourcelatlng == null
+                    ? null
+                    : destinationlatlng == null
+                    ? null
+                    : () {
+                  internetConnectionCheck();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShowRestArea(
+                        sourceLatLng: sourcelatlng!,
+                        destinationLatLng: destinationlatlng!,
+                        csvListData: csvData,
+                        checkPoints: checkPoints,
+                      ),
+                    ),
+                  ).then((value) {
+                    _resetState();
+                  });
+                },
+                child: const Text("Find Rest Area"),
+              ),
+            ],
+          ),
         ),
       ),
     );
