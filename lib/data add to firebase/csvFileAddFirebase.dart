@@ -17,6 +17,7 @@ class _CsvfileaddfirebaseState extends State<Csvfileaddfirebase> {
   Future<void> _loadCSVtoFirebase() async {
     // create firebase collection so that store data
     final CollectionReference alldata = FirebaseFirestore.instance.collection('alldata');
+    final CollectionReference checkpoints = FirebaseFirestore.instance.collection('checkpoints');
     try {
       final csvString = await rootBundle.loadString('assets/another_data/final_data.csv');
       List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
@@ -52,6 +53,25 @@ for(var i=1; i<csvData.length; i++)
     // 1 document all column akbare save hobe for each loop
     alldata.add(record);
   }
+
+      if (csvData.isNotEmpty) {
+        for (int i = 1; i < csvData.length; i++) {
+          try {
+            checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
+            var anotherRecord = {
+              "lat":csvData[i][10],
+              "lng":csvData[i][11],
+            };
+            checkpoints.add(anotherRecord);
+          } catch (e) {
+            debugPrint('Error processing row $i: $e');
+          }
+        }
+      }
+
+      setState(() {
+        // use this for save checkpoint data
+      });
 
     } catch (e) {
       debugPrint('***************error is $e');
