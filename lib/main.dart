@@ -27,7 +27,7 @@ class myApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.light, // not get device theme all time use light theme
       home: SplashScreen(),
     );
   }

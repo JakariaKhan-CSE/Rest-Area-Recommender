@@ -28,25 +28,25 @@ for(var i=1; i<csvData.length; i++)
   {
     // use this map so that easily added to firebase one document all keys
     var record ={
-"public_toilet" : csvData[i][0],
-      "hospital":csvData[i][1],
-      "park":csvData[i][2],
-      "shopping_mall":csvData[i][3],
-      "hotel":csvData[i][4],
-      "restaurant":csvData[i][5],
-      "petrol_station":csvData[i][6],
-      "mosque":csvData[i][7],
-      "others":csvData[i][8],
-      "name_of_the_palace":csvData[i][9],
-      "latitude":csvData[i][10],
-      "longitude":csvData[i][11],
-      "location":csvData[i][12],
-      "separate_female_washroom":csvData[i][13],
-      "handicapped_washroom_facility":csvData[i][14],
-      "kids_feeding_corner":csvData[i][15],
-      "separate_female_prayer_room": csvData[i][16],
-      "kids_and_women_refreshing_area":csvData[i][17],
-      "otherss":csvData[i][18]   // see creafully
+"public_toilet" : csvData[i][0]??"no",
+      "hospital":csvData[i][1]??"no",
+      "park":csvData[i][2]??"no",
+      "shopping_mall":csvData[i][3]??"no",
+      "hotel":csvData[i][4]??"no",
+      "restaurant":csvData[i][5]??"no",
+      "petrol_station":csvData[i][6]??"no",
+      "mosque":csvData[i][7]??"no",
+      "others":csvData[i][8]??"no",
+      "name_of_the_palace":csvData[i][9]??"no",
+      "latitude":csvData[i][10]??"no",
+      "longitude":csvData[i][11]??"no",
+      "location":csvData[i][12]??"no",
+      "separate_female_washroom":csvData[i][13]??"no",
+      "handicapped_washroom_facility":csvData[i][14]??"no",
+      "kids_feeding_corner":csvData[i][15]??"no",
+      "separate_female_prayer_room": csvData[i][16]??"no",
+      "kids_and_women_refreshing_area":csvData[i][17]??"no",
+      "otherss":csvData[i][18]??"no"   // see creafully
 
     };
     // 1 document all column akbare save hobe for each loop

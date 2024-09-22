@@ -197,6 +197,30 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Rest Area Recommended"),
         centerTitle: true,
         elevation: 10,
+        actions: [
+          PopupMenuButton(
+            onSelected: (value){
+              if(value == 'home')
+              {
+                // open home page
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage(),));
+              }
+             else if(value == 'login')
+                {
+                  // open login functionality
+                }
+              else if(value == 'about')
+                {
+                  // show developer about
+                }
+            },
+
+              itemBuilder: (context) => [
+                PopupMenuItem(child: Text('Home'),value: 'home',),  // value same as condition check value
+                PopupMenuItem(child: Text('Login'),value: 'login',),
+                PopupMenuItem(child: Text('About'),value: 'about',),
+              ],)
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
