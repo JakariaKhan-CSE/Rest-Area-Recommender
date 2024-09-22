@@ -17,12 +17,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-   // Timer(const Duration(seconds: 4), ()=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=>const HomePage())));
+   Timer(const Duration(seconds: 4), ()=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=>const HomePage())));
 
-    // this page goes when need to csv file full data to store firebase
-    Timer(const Duration(seconds: 4), ()=>Navigator.
-    pushReplacement(context, MaterialPageRoute(
-        builder: (ctx)=>const Csvfileaddfirebase())));
+    // this page(Successfully work) goes when need to csv file full data to store firebase
+    // Timer(const Duration(seconds: 4), ()=>Navigator.
+    // pushReplacement(context, MaterialPageRoute(
+    //     builder: (ctx)=>const Csvfileaddfirebase())));
     super.initState();
   }
   @override
