@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:rest_area_recommended/homepage.dart';
 
+import 'data add to firebase/csvFileAddFirebase.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -15,7 +17,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    Timer(const Duration(seconds: 4), ()=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=>const HomePage())));
+   // Timer(const Duration(seconds: 4), ()=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=>const HomePage())));
+    Timer(const Duration(seconds: 4), ()=>Navigator.
+    pushReplacement(context, MaterialPageRoute(
+        builder: (ctx)=>const Csvfileaddfirebase())));
     super.initState();
   }
   @override
