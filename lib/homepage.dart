@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rest_area_recommended/login_page.dart';
 import 'package:rest_area_recommended/showRestArea.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -208,6 +209,7 @@ class _HomePageState extends State<HomePage> {
              else if(value == 'login')
                 {
                   // open login functionality
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
                 }
               else if(value == 'about')
                 {
