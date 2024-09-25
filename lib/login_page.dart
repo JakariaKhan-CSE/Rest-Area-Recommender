@@ -1,5 +1,7 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rest_area_recommended/add%20data%20to%20firebase.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -8,6 +10,27 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  Future<void> login(BuildContext context)async{
+    try
+        {
+          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: email.text.trim(),
+              password: password.text);
+          var authCredential = userCredential.user;
+
+          if(authCredential!.uid.isNotEmpty)
+            {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AddDataFirebase(),));
+            }
+          else
+            {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
+            }
+        }catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
+    }
+  }
   final _formkey = GlobalKey<FormState>();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -89,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
 
                               ),
                             ),
-                            SizedBox(height: 10,),
+                            SizedBox(height: 2,),
 
                             Container(
                               padding: EdgeInsets.all(8),
@@ -122,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                           if(_formkey.currentState!.validate())
                             {
                               // go to add form page which admin can add data
-
+login(context);
                             }
                         },
                         child: Container(
@@ -148,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 50,),
                       FadeInUp(duration: Duration(seconds: 2),child: GestureDetector(
                         onTap: (){
-                          // send forgot password frebase link
+                          // send forgot password firebase link
                         },
                         child: Text('Forgot Password?',style: TextStyle(
                             color: Colors.indigo
