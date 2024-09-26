@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rest_area_recommended/add%20data%20to%20firebase.dart';
+import 'package:rest_area_recommended/forgot%20password.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -20,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
 
           if(authCredential!.uid.isNotEmpty)
             {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AddDataFirebase(),));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AddDataFirebase(),));
             }
           else
             {
@@ -34,6 +35,13 @@ class _LoginPageState extends State<LoginPage> {
   final _formkey = GlobalKey<FormState>();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    email.dispose();
+    password.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,7 +179,7 @@ login(context);
                       SizedBox(height: 50,),
                       FadeInUp(duration: Duration(seconds: 2),child: GestureDetector(
                         onTap: (){
-                          // send forgot password firebase link
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword(),));
                         },
                         child: Text('Forgot Password?',style: TextStyle(
                             color: Colors.indigo

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "308815385769",
-    "project_id": "rest-area-recomended",
-    "storage_bucket": "rest-area-recomended.appspot.com"
+    "project_number": "767718137838",
+    "project_id": "restarearecommender",
+    "storage_bucket": "restarearecommender.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:308815385769:android:b540dcc07a821a060c05b8",
+        "mobilesdk_app_id": "1:767718137838:android:c4cd792261fd89c4cdf8ff",
         "android_client_info": {
           "package_name": "com.example.rest_area_recommended"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDCaGFju9cW22XZrza2zk3_fu0ov11hfVg"
+          "current_key": "AIzaSyDc1b3h8KR5JKIAbA5Ka9jCns84_0bVcWY"
         }
       ],
       "services": {

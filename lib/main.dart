@@ -8,10 +8,10 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp(
         options: FirebaseOptions(
-            apiKey: 'AIzaSyDCaGFju9cW22XZrza2zk3_fu0ov11hfVg',
-            appId: '1:308815385769:android:b540dcc07a821a060c05b8',
-            messagingSenderId: '308815385769',
-            projectId: 'rest-area-recomended'));
+            apiKey: 'AIzaSyDc1b3h8KR5JKIAbA5Ka9jCns84_0bVcWY',
+            appId: '1:767718137838:android:c4cd792261fd89c4cdf8ff',
+            messagingSenderId: '767718137838',
+            projectId: 'restarearecommender'));
   } catch (e) {
     print('Firebase initialization error is: $e');
   }
