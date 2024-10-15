@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:csv/csv.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rest_area_recommended/login_page.dart';
 import 'package:rest_area_recommended/showRestArea.dart';
 import 'package:uuid/uuid.dart';
@@ -29,13 +29,10 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _sourceController = TextEditingController();
   var uuid = const Uuid();
-  String session_token1 = "123456";
-  String session_token2 = "789546";
   bool sourceTextField = false;
   bool destinationTextField = false;
   List<dynamic> placesListSource = [];
   List<dynamic> placesListTarget = [];
-  String? district;
   String? sourcelocation_name;
   String? targetlocation_name;
   LatLng? sourcelatlng;
@@ -131,41 +128,37 @@ class _HomePageState extends State<HomePage> {
   void onChangeSource(String input) {
     getSuggestionSource(input);
   }
+
   void onChangeTarget(String input) {
     getSuggestionTarget(input);
   }
 
   Future<void> getSuggestionSource(String input) async {
-
-      const String kplacesApiKey = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';
-      String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-      String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$session_token1';
-
-      var response = await http.get(Uri.parse(request));
-      if (response.statusCode == 200) {
-        setState(() {
-          placesListSource = jsonDecode(response.body.toString())['predictions'];
-        });
-      } else {
-        throw Exception('Failed to load data. Response not 200');
-      }
-
-  }
-  Future<void> getSuggestionTarget(String input) async {
-
-    const String kplacesApiKey = 'AIzaSyDtrIULtBZpbwdbvDlMiwf8W9u8Zem1T1g';
-    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request = '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$session_token2';
+    String baseURL = 'https://nominatim.openstreetmap.org/search';
+    String request = '$baseURL?q=$input&format=json&addressdetails=1&limit=5';
 
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
       setState(() {
-        placesListTarget = jsonDecode(response.body.toString())['predictions'];
+        placesListSource = jsonDecode(response.body.toString());
       });
     } else {
       throw Exception('Failed to load data. Response not 200');
     }
+  }
 
+  Future<void> getSuggestionTarget(String input) async {
+    String baseURL = 'https://nominatim.openstreetmap.org/search';
+    String request = '$baseURL?q=$input&format=json&addressdetails=1&limit=5';
+
+    var response = await http.get(Uri.parse(request));
+    if (response.statusCode == 200) {
+      setState(() {
+        placesListTarget = jsonDecode(response.body.toString());
+      });
+    } else {
+      throw Exception('Failed to load data. Response not 200');
+    }
   }
 
   @override
@@ -200,28 +193,23 @@ class _HomePageState extends State<HomePage> {
         elevation: 10,
         actions: [
           PopupMenuButton(
-            onSelected: (value){
-              if(value == 'home')
-              {
+            onSelected: (value) {
+              if (value == 'home') {
                 // open home page
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage(),));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HomePage()));
+              } else if (value == 'login') {
+                // open login functionality
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+              } else if (value == 'about') {
+                // show developer about
               }
-             else if(value == 'login')
-                {
-                  // open login functionality
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
-                }
-              else if(value == 'about')
-                {
-                  // show developer about
-                }
             },
-
-              itemBuilder: (context) => [
-                PopupMenuItem(child: Text('Home'),value: 'home',),  // value same as condition check value
-                PopupMenuItem(child: Text('Login'),value: 'login',),
-                PopupMenuItem(child: Text('About'),value: 'about',),
-              ],)
+            itemBuilder: (context) => [
+              const PopupMenuItem(child: Text('Home'), value: 'home'),
+              const PopupMenuItem(child: Text('Login'), value: 'login'),
+              const PopupMenuItem(child: Text('About'), value: 'about'),
+            ],
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -233,15 +221,18 @@ class _HomePageState extends State<HomePage> {
               sourcelatlng != null
                   ? Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('$sourcelocation_name', style: const TextStyle(color: Colors.blue)),
-                    const Icon(Icons.arrow_forward, size: 20),
-                    targetlocation_name != null
-                        ? Text('$targetlocation_name', style: const TextStyle(color: Colors.pink))
-                        : Container(),
-                  ],
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('$sourcelocation_name', style: const TextStyle(color: Colors.blue)),
+                      const Icon(Icons.arrow_forward, size: 20),
+                      targetlocation_name != null
+                          ? Text('$targetlocation_name', style: const TextStyle(color: Colors.pink))
+                          : Container(),
+                    ],
+                  ),
                 ),
               )
                   : Container(),
@@ -254,12 +245,9 @@ class _HomePageState extends State<HomePage> {
                   _currentPosition().then((value) async {
                     List<Placemark> placemarks = await placemarkFromCoordinates(value.latitude, value.longitude);
                     var firstAddress = placemarks[0];
-                    var secondAddress = placemarks[1];
-                    var thirdAddress = placemarks[2];
-
                     setState(() {
                       sourcelatlng = LatLng(value.latitude, value.longitude);
-                      sourcelocation_name = firstAddress.subAdministrativeArea ?? secondAddress.subAdministrativeArea;
+                      sourcelocation_name = firstAddress.subAdministrativeArea ?? firstAddress.locality;
                     });
                   });
                 },
@@ -271,7 +259,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextFormField(
-                  onTap: (){
+                  onTap: () {
                     sourceTextField = true;
                     destinationTextField = false;
                   },
@@ -290,34 +278,27 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     itemCount: placesListSource.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () async {
-                          List<Location> locations = await locationFromAddress(placesListSource[index]['description']);
-                          if (_sourceController.text.isNotEmpty) {
-                            _sourceController.text = placesListSource[index]['description'];
-                            setState(() {
-                              _showSuggest = false;
-                              sourcelatlng = LatLng(locations.first.latitude, locations.first.longitude);
-                              sourcelocation_name = placesListSource[index]['description'];
-
-
-                            });
-                          }
-
-
+                      return ListTile(
+                        title: Text(placesListSource[index]['display_name']),
+                        onTap: () {
+                          setState(() {
+                            sourcelocation_name = placesListSource[index]['display_name'];
+                            sourcelatlng = LatLng(placesListSource[index]['lat'], placesListSource[index]['lon']);
+                            _sourceController.text = sourcelocation_name!;
+                            _showSuggest = false;
+                          });
                         },
-                        child: ListTile(title: Text(placesListSource[index]['description'])),
                       );
                     },
                   ),
                 ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextFormField(
-                  onTap: (){
+                  onTap: () {
                     destinationTextField = true;
                     sourceTextField = false;
                   },
@@ -326,60 +307,60 @@ class _HomePageState extends State<HomePage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    hintText: "Type target place name",
+                    hintText: "Type destination place name",
                   ),
                 ),
               ),
               if (_showSuggest1 && destinationTextField)
                 SizedBox(
-                  height: 200, // Adjust height according to your needs
+                  height: 200,
                   child: ListView.builder(
                     itemCount: placesListTarget.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () async {
-                          List<Location> locations = await locationFromAddress(placesListTarget[index]['description']);
-                          if (_destinationController.text.isNotEmpty) {
-                            _destinationController.text = placesListTarget[index]['description'];
-                            setState(() {
-                              _showSuggest1 = false;
-                              destinationlatlng = LatLng(locations.first.latitude, locations.first.longitude);
-                              targetlocation_name = placesListTarget[index]['description'];
-
-
-                            });
-                          }
+                      return ListTile(
+                        title: Text(placesListTarget[index]['display_name']),
+                        onTap: () {
+                          setState(() {
+                            targetlocation_name = placesListTarget[index]['display_name'];
+                            destinationlatlng = LatLng(double.parse(placesListTarget[index]['lat']),
+                                double.parse(placesListTarget[index]['lon']));
+                            _destinationController.text = targetlocation_name!;
+                            _showSuggest1 = false;
+                          });
                         },
-                        child: ListTile(title: Text(placesListTarget[index]['description'])),
                       );
                     },
                   ),
                 ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange.withOpacity(0.7), foregroundColor: Colors.black),
-                onPressed: sourcelatlng == null
+                onPressed:  sourcelatlng == null
                     ? null
                     : destinationlatlng == null
                     ? null
                     : () {
                   internetConnectionCheck();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ShowRestArea(
-                        sourceLatLng: sourcelatlng!,
-                        destinationLatLng: destinationlatlng!,
-                        csvListData: csvData,
-                        checkPoints: checkPoints,
+                  if (sourcelatlng != null && destinationlatlng != null) {
+                    // Navigate to the ShowRestArea page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowRestArea(
+                          checkPoints: checkPoints,
+                          sourceLatLng: sourcelatlng!,
+                          destinationLatLng: destinationlatlng!,
+                          csvListData: csvData, // Pass your actual CSV data here
+                        ),
                       ),
-                    ),
-                  ).then((value) {
-                    _resetState();
-                  });
+                    ).then((val){
+                      _resetState(); // next page jawar age sob kisu remove kore jabe
+                    });
+
+                  } else {
+                    // Display error or handle the case where latlng is null
+                  }
                 },
-                child: const Text("Find Rest Area"),
+                child: const Text("Search Rest Area"),
               ),
             ],
           ),
