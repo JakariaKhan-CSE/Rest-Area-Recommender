@@ -25,6 +25,7 @@ class ShowRestArea extends StatefulWidget {
 
 class _ShowRestAreaState extends State<ShowRestArea> {
   List<Marker> markers = [];
+  List<LatLng> polylineCoordinates = [];
   List<String> iconImage = [
     'assets/icon/public_toilet.png',
     'assets/icon/hospital_moon.png',
@@ -51,39 +52,50 @@ class _ShowRestAreaState extends State<ShowRestArea> {
   @override
   void initState() {
     super.initState();
+    _setPolylineCoordinates();
     _setMarkers();
   }
 
+  void _setPolylineCoordinates() {
+    polylineCoordinates = [
+      widget.sourceLatLng,
+      widget.destinationLatLng,
+    ];
+  }
+
   _setMarkers() async {
-    // Add Source Marker
+    // Add Source Marker (Blue)
     markers.add(
       Marker(
         point: widget.sourceLatLng,
-        child: const Icon(
+        width: 40,
+        height: 40,
+        child:  const Icon(
           Icons.location_on,
           color: Colors.blue,
-          size: 30,
+          size: 40,
         ),
       ),
     );
 
-    // Add Destination Marker
+    // Add Destination Marker (Red)
     markers.add(
       Marker(
         point: widget.destinationLatLng,
-        child: const Icon(
-          Icons.flag,
+        width: 40,
+        height: 40,
+        child:  const Icon(
+          Icons.location_on,
           color: Colors.red,
-          size: 30,
+          size: 40,
         ),
       ),
     );
 
-    // Add rest area markers from CSV
+    // Add Checkpoint Markers within 1 km of the polyline
     for (int i = 1; i < widget.csvListData.length; i++) {
-      LatLng point = widget.checkPoints[i - 1]; // Adjust index for checkPoints
+      LatLng point = widget.checkPoints[i - 1];
 
-      // Check if point is near polyline
       if (_isPointNearPolyline(point)) {
         final Uint8List? markerIcon = await getByteFromAssets(
           iconImage[i % iconImage.length],
@@ -93,9 +105,14 @@ class _ShowRestAreaState extends State<ShowRestArea> {
         markers.add(
           Marker(
             point: point,
-            child: markerIcon != null
-                ? Image.memory(markerIcon)
-                : const Icon(Icons.place, color: Colors.pink, size: 30),
+            width: 50,
+            height: 50,
+            child:  GestureDetector(
+              onTap: () => _showFacilityDialog(context, widget.csvListData[i]),
+              child: markerIcon != null
+                  ? Image.memory(markerIcon)
+                  : const Icon(Icons.place, color: Colors.pink, size: 30),
+            ),
           ),
         );
       }
@@ -104,9 +121,92 @@ class _ShowRestAreaState extends State<ShowRestArea> {
   }
 
   bool _isPointNearPolyline(LatLng point) {
-    const double tolerance = 1.0; // Tolerance in kilometers
-    // Logic for checking proximity to polyline can be implemented here
-    return true; // Placeholder return value for demonstration
+    const double tolerance = 1.0; // 1 km tolerance
+
+    for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+      LatLng start = polylineCoordinates[i];
+      LatLng end = polylineCoordinates[i + 1];
+
+      double distance = _calculateDistanceToLineSegment(point, start, end);
+      if (distance <= tolerance) return true;
+    }
+    return false;
+  }
+
+  double _calculateDistanceToLineSegment(LatLng point, LatLng start, LatLng end) {
+    final Distance distance = const Distance();
+
+    double distToStart = distance.as(LengthUnit.Kilometer, point, start);
+    double distToEnd = distance.as(LengthUnit.Kilometer, point, end);
+    double distStartToEnd = distance.as(LengthUnit.Kilometer, start, end);
+
+    if (distToStart + distToEnd == distStartToEnd) return 0.0;
+    return distToStart < distToEnd ? distToStart : distToEnd;
+  }
+
+
+
+  void _showFacilityDialog(BuildContext context, List<dynamic> facilityData) {
+    // Extract the place name from the CSV data (assuming it's at index 0)
+    String placeName = facilityData[9].toString();
+
+    // List of facilities to check (index 13-18)
+    List<String> facilities = [
+      "Separate female washroom",
+      "Handicapped washroom facility",
+      "Kids Feeding corner",
+      "Separate female prayer room",
+      "Kids and women refreshing area",
+      "Others"
+    ];
+
+    // Collect available facilities
+    List<String> availableFacilities = [];
+    for (int j = 13; j <= 18; j++) {
+      if (facilityData[j].toString().trim().toLowerCase() == 'yes') {
+        availableFacilities.add(facilities[j - 13]);
+      }
+    }
+
+    // Show the bottom sheet with place name and available facilities
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(14.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Display the place name
+              Text(
+                placeName,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+            Text(
+              'Facilities Available',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+              SizedBox(height: 10,),
+              // Display available facilities or "No facilities available"
+              if (availableFacilities.isEmpty)
+                ListTile(
+                    leading: const Icon(Icons.highlight_remove_outlined, color: Colors.redAccent),
+                    title: Text("No facilities available."))
+              else
+                ...availableFacilities.map(
+                      (facility) => ListTile(
+                    leading: const Icon(Icons.check_circle, color: Colors.green),
+                    title: Text(facility),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -122,6 +222,15 @@ class _ShowRestAreaState extends State<ShowRestArea> {
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             subdomains: ['a', 'b', 'c'],
+          ),
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: polylineCoordinates,
+                strokeWidth: 4.0,
+                color: Colors.blue,
+              ),
+            ],
           ),
           MarkerLayer(markers: markers),
         ],

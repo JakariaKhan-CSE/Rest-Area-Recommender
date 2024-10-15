@@ -283,7 +283,8 @@ class _HomePageState extends State<HomePage> {
                         onTap: () {
                           setState(() {
                             sourcelocation_name = placesListSource[index]['display_name'];
-                            sourcelatlng = LatLng(placesListSource[index]['lat'], placesListSource[index]['lon']);
+                            sourcelatlng = LatLng(double.parse(placesListSource[index]['lat']), 
+                                double.parse(placesListSource[index]['lon']));
                             _sourceController.text = sourcelocation_name!;
                             _showSuggest = false;
                           });
