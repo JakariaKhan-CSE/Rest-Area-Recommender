@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -45,7 +46,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadCSV();
+   // _loadCSV();
+    _loadCSVFromFirebase(); // when app open it gets data from firebase
     _destinationController.addListener(() => onChangeTarget(_destinationController.text));
     _sourceController.addListener(() => onChangeSource(_sourceController.text));
     internetConnectionCheck();
@@ -80,26 +82,70 @@ class _HomePageState extends State<HomePage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  Future<void> _loadCSV() async {
+  // Future<void> _loadCSV() async {
+  //   try {
+  //     final csvString = await rootBundle.loadString('assets/another_data/final_data.csv');
+  //     List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
+  //     setState(() {
+  //       csvData = rowAsListOfValues;
+  //     });
+  //     if (csvData.isNotEmpty) {
+  //       for (int i = 1; i < csvData.length; i++) {
+  //         try {
+  //           checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
+  //         } catch (e) {
+  //           debugPrint('Error processing row $i: $e');
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint('***************error is $e');
+  //   }
+  //   setState(() {});
+  // }
+  Future<void> _loadCSVFromFirebase() async {
     try {
-      final csvString = await rootBundle.loadString('assets/another_data/final_data.csv');
-      List<List<dynamic>> rowAsListOfValues = const CsvToListConverter().convert(csvString);
-      setState(() {
-        csvData = rowAsListOfValues;
-      });
-      if (csvData.isNotEmpty) {
-        for (int i = 1; i < csvData.length; i++) {
-          try {
-            checkPoints.add(LatLng(csvData[i][10], csvData[i][11]));
-          } catch (e) {
-            debugPrint('Error processing row $i: $e');
-          }
+      // References to the collections
+      CollectionReference collectionReference =  FirebaseFirestore.instance.collection('alldata');
+      CollectionReference checkpointReference = FirebaseFirestore.instance.collection('checkpoints');
+      int len =await collectionReference.snapshots().length;
+
+      // Fetch all documents from 'alldata' collection
+      QuerySnapshot allDatasnapShot = await collectionReference.get();
+      // csvData.add([
+      //   doc.id, // Add document ID if needed
+      //   ...doc.data().values, // Add all values of the document
+      // ]);
+      // csvData.add([doc.id, ...data.values]); ensures that both the document ID and its values are added to the CSV data.
+      // doc er vitore ekekta alldata collection er document add hobe
+      for(var doc in allDatasnapShot.docs)
+        {
+          // Cast doc data to a Map and extract values
+          final data = doc.data() as Map<String, dynamic>;
+          csvData.add([
+           ...data.values     // Add all values of the document
+          ]);
         }
-      }
+
+      // Fetch all documents from 'checkpoints' collection
+      QuerySnapshot checkPointSnapshot = await checkpointReference.get();
+      for(var doc in checkPointSnapshot.docs)
+        {
+          final data = doc.data() as Map<String,dynamic>;
+          // the document contains 'lat' and 'lon' fields
+          double latitude = data['lat'];
+          double longitude = data['lng'];
+          // Add LatLng point to the checkPoints list
+          checkPoints.add(LatLng(latitude, longitude));
+        }
+
+      // Output the fetched data for testing purposes
+      print('CSV Data: $csvData');
+      print('Checkpoints: $checkPoints');
     } catch (e) {
       debugPrint('***************error is $e');
     }
-    setState(() {});
+    // setState(() {});
   }
 
   void internetConnectionCheck() {
