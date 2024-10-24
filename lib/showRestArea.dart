@@ -1,5 +1,4 @@
 import 'dart:ui' as ui;
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,7 +10,7 @@ class ShowRestArea extends StatefulWidget {
   final LatLng sourceLatLng;
   final LatLng destinationLatLng;
 
-  ShowRestArea({
+  const ShowRestArea({
     super.key,
     required this.sourceLatLng,
     required this.destinationLatLng,
@@ -134,7 +133,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
   }
 
   double _calculateDistanceToLineSegment(LatLng point, LatLng start, LatLng end) {
-    final Distance distance = const Distance();
+    const Distance distance = Distance();
 
     double distToStart = distance.as(LengthUnit.Kilometer, point, start);
     double distToEnd = distance.as(LengthUnit.Kilometer, point, end);
@@ -189,11 +188,11 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               'Facilities Available',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               // Display available facilities or "No facilities available"
               if (availableFacilities.isEmpty)
-                ListTile(
-                    leading: const Icon(Icons.highlight_remove_outlined, color: Colors.redAccent),
+                const ListTile(
+                    leading: Icon(Icons.highlight_remove_outlined, color: Colors.redAccent),
                     title: Text("No facilities available."))
               else
                 ...availableFacilities.map(
@@ -221,7 +220,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
         children: [
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
+            subdomains: const ['a', 'b', 'c'],
           ),
           PolylineLayer(
             polylines: [

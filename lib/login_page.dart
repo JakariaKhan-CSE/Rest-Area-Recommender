@@ -21,15 +21,15 @@ class _LoginPageState extends State<LoginPage> {
 
           if(authCredential!.uid.isNotEmpty)
             {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AddDataFirebase(),));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AddDataFirebase(),));
             }
           else
             {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
             }
         }catch(e)
     {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
     }
   }
   final _formkey = GlobalKey<FormState>();
@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Container(
                 height: 300,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage('assets/images/login background.jpg'),
                         fit: BoxFit.cover // very important image ta full display use korar jonno
@@ -61,9 +61,9 @@ class _LoginPageState extends State<LoginPage> {
                 child: Stack(
                   children: [
 
-                    Positioned(child: FadeInUpBig(duration: Duration(milliseconds: 1600),child: Container(
-                      margin: EdgeInsets.only(top: 50),
-                      child: Center(
+                    Positioned(child: FadeInUpBig(duration: const Duration(milliseconds: 1600),child: Container(
+                      margin: const EdgeInsets.only(top: 50),
+                      child: const Center(
                         child: Text('Login',style: TextStyle(
                             color: Colors.white,
                             fontSize: 40,
@@ -76,21 +76,21 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-              Padding(padding: EdgeInsets.all(20),
+              Padding(padding: const EdgeInsets.all(20),
 
                 child: Form(
                   key: _formkey,
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.white,
                             boxShadow: [
                               BoxShadow(
                                   color: Colors.indigo.shade200,
-                                  offset: Offset(0,10),
+                                  offset: const Offset(0,10),
                                   blurRadius: 20
                               )
                             ]
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           children: [
                             Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border(bottom: BorderSide(color: Colors.grey.shade100))
@@ -113,17 +113,20 @@ class _LoginPageState extends State<LoginPage> {
 
                                 ),
                                 validator: (value){
-                                  if(value!.isEmpty)
+                                  if(value!.isEmpty) {
                                     return "Enter your email";
+                                  return null;
+                                  }
+                                  return null;
                                 },
 
 
                               ),
                             ),
-                            SizedBox(height: 2,),
+                            const SizedBox(height: 2,),
 
                             Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border(bottom: BorderSide(color: Colors.grey.shade100))
@@ -136,8 +139,11 @@ class _LoginPageState extends State<LoginPage> {
                                     hintText: 'Password'
                                 ),
                                 validator: (value){
-                                  if(value!.isEmpty)
+                                  if(value!.isEmpty) {
                                     return "Enter your password";
+                                  return null;
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -146,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 30,),
+                      const SizedBox(height: 30,),
                       GestureDetector(
                         onTap: (){
 
@@ -158,7 +164,7 @@ login(context);
                         },
                         child: Container(
                           height: 50,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                               gradient: LinearGradient(
                                   colors: [
                                     Colors.blue,
@@ -169,19 +175,19 @@ login(context);
 
                               )
                           ),
-                          child: Center(child: Text('Login',style: TextStyle(
+                          child: const Center(child: Text('Login',style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20
                           ),),),
                         ),
                       ),
-                      SizedBox(height: 50,),
-                      FadeInUp(duration: Duration(seconds: 2),child: GestureDetector(
+                      const SizedBox(height: 50,),
+                      FadeInUp(duration: const Duration(seconds: 2),child: GestureDetector(
                         onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPassword(),));
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ForgotPassword(),));
                         },
-                        child: Text('Forgot Password?',style: TextStyle(
+                        child: const Text('Forgot Password?',style: TextStyle(
                             color: Colors.indigo
                         ),),
                       ))

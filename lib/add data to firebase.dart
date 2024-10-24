@@ -10,7 +10,7 @@ class AddDataFirebase extends StatefulWidget {
 class _AddDataFirebaseState extends State<AddDataFirebase> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
 
     );
   }

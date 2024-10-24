@@ -7,7 +7,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(
-        options: FirebaseOptions(
+        options: const FirebaseOptions(
             apiKey: 'AIzaSyDc1b3h8KR5JKIAbA5Ka9jCns84_0bVcWY',
             appId: '1:767718137838:android:c4cd792261fd89c4cdf8ff',
             messagingSenderId: '767718137838',
@@ -27,7 +27,7 @@ class myApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light, // not get device theme all time use light theme
+      themeMode: ThemeMode.light, // not get device theme. All time use light theme
       home: SplashScreen(),
     );
   }

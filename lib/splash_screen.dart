@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:rest_area_recommended/homepage.dart';
 
-import 'data add to firebase/csvFileAddFirebase.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

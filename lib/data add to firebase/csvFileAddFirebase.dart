@@ -81,9 +81,9 @@ for(var i=1; i<csvData.length; i++)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Csv data store in Firebase'),centerTitle: true,),
+      appBar: AppBar(title: const Text('Csv data store in Firebase'),centerTitle: true,),
       body: Center(
-        child: ElevatedButton(onPressed: _loadCSVtoFirebase, child: Text('CSV file save Firebase')),
+        child: ElevatedButton(onPressed: _loadCSVtoFirebase, child: const Text('CSV file save Firebase')),
       ),
     );
   }

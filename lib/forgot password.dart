@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ForgotPassword extends StatefulWidget {
 
-  ForgotPassword({super.key});
+  const ForgotPassword({super.key});
 
   @override
   State<ForgotPassword> createState() => _ForgotPasswordState();
@@ -29,14 +29,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               padding: const EdgeInsets.all(10.0),
               child: TextFormField(
                 controller: email,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter your email',
                   border: OutlineInputBorder()
                 ),
 
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             ElevatedButton(onPressed: ()async{
 try
     {
@@ -45,18 +45,18 @@ try
       if(signInMethod.isNotEmpty)
         {
           await FirebaseAuth.instance.sendPasswordResetEmail(email: email.text.trim()).then((value)=>
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reset link send successfully'),backgroundColor: Colors.green,))
-          ).catchError((e)=> ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cannot Send Reset Link'),backgroundColor: Colors.red,)));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reset link send successfully'),backgroundColor: Colors.green,))
+          ).catchError((e)=> ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cannot Send Reset Link'),backgroundColor: Colors.red,)));
         }
       else{
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('You are not registered User'),backgroundColor: Colors.red,));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You are not registered User'),backgroundColor: Colors.red,));
       }
     }
     catch(e)
               {
                 print('error occur');
               }
-            }, child: Text('Send Reset Link'))
+            }, child: const Text('Send Reset Link'))
           ],
         ),
       ),

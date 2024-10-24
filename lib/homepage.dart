@@ -4,9 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rest_area_recommended/login_page.dart';
@@ -251,9 +249,9 @@ class _HomePageState extends State<HomePage> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(child: Text('Home'), value: 'home'),
-              const PopupMenuItem(child: Text('Login'), value: 'login'),
-              const PopupMenuItem(child: Text('About'), value: 'about'),
+              const PopupMenuItem(value: 'home', child: Text('Home')),
+              const PopupMenuItem(value: 'login', child: Text('Login')),
+              const PopupMenuItem(value: 'about', child: Text('About')),
             ],
           )
         ],
@@ -392,12 +390,18 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowRestArea(
-                          checkPoints: checkPoints,
-                          sourceLatLng: sourcelatlng!,
-                          destinationLatLng: destinationlatlng!,
-                          csvListData: csvData, // Pass your actual CSV data here
-                        ),
+                        builder: (context) {
+                          // next page a jawar age check korbe csvdata ase kina na thakle(internet issue karone first time data get na hole) button click korar somoi abar dat get korbe firebase theke
+                          if(csvData.isEmpty) {
+                            _loadCSVFromFirebase();
+                          }
+                          return ShowRestArea(
+                            checkPoints: checkPoints,
+                            sourceLatLng: sourcelatlng!,
+                            destinationLatLng: destinationlatlng!,
+                            csvListData: csvData, // Pass your actual CSV data here
+                          );
+                        },
                       ),
                     ).then((val){
                       _resetState(); // next page jawar age sob kisu remove kore jabe
