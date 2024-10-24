@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     destinationBox = Hive.box('destinations');
   }
 
+// return device current position
   Future<Position> _currentPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       Future.error('Location services are disabled.');
-      openAppSettings();
+      openAppSettings();  // very useful
     }
 
     permission = await Geolocator.checkPermission();
@@ -102,11 +103,12 @@ class _HomePageState extends State<HomePage> {
   //   setState(() {});
   // }
   Future<void> _loadCSVFromFirebase() async {
+    // print('load data called');
     try {
       // References to the collections
       CollectionReference collectionReference =  FirebaseFirestore.instance.collection('alldata');
       CollectionReference checkpointReference = FirebaseFirestore.instance.collection('checkpoints');
-      int len =await collectionReference.snapshots().length;
+
 
       // Fetch all documents from 'alldata' collection
       QuerySnapshot allDatasnapShot = await collectionReference.get();
@@ -138,8 +140,10 @@ class _HomePageState extends State<HomePage> {
         }
 
       // Output the fetched data for testing purposes
-      print('CSV Data: $csvData');
-      print('Checkpoints: $checkPoints');
+      // print('CSV Data: $csvData');
+      // print('Checkpoints: $checkPoints');
+      // print(csvData.length);
+      // print(checkPoints.length);
     } catch (e) {
       debugPrint('***************error is $e');
     }
