@@ -150,6 +150,7 @@ class _HomePageState extends State<HomePage> {
     // setState(() {});
   }
 
+  // all time internet connectivity check
   void internetConnectionCheck() {
     connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       if (result.contains(ConnectivityResult.none)) {
@@ -181,6 +182,7 @@ class _HomePageState extends State<HomePage> {
     getSuggestionTarget(input);
   }
 
+  // use openstreet api to get free place suggest api
   Future<void> getSuggestionSource(String input) async {
     String baseURL = 'https://nominatim.openstreetmap.org/search';
     String request = '$baseURL?q=$input&format=json&addressdetails=1&limit=5';
@@ -195,6 +197,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // use openstreet api to get free target suggest api
   Future<void> getSuggestionTarget(String input) async {
     String baseURL = 'https://nominatim.openstreetmap.org/search';
     String request = '$baseURL?q=$input&format=json&addressdetails=1&limit=5';
@@ -217,6 +220,7 @@ class _HomePageState extends State<HomePage> {
     connectivitySubscription.cancel();
   }
 
+  // user show rest area page navigate hoyar somoi ai function take trigger kore sob kisu reset kore dibe
   void _resetState() {
     setState(() {
       _destinationController.clear();
@@ -308,8 +312,10 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(10)),
                 child: TextFormField(
                   onTap: () {
-                    sourceTextField = true;
-                    destinationTextField = false;
+                    setState(() {
+                      sourceTextField = true;
+                      destinationTextField = false;
+                    });
                   },
                   controller: _sourceController,
                   decoration: InputDecoration(
@@ -320,6 +326,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
+              // ai listview builder ta jokhon user kisu type korbe tokhon show korbe
               if (_showSuggest && sourceTextField)
                 SizedBox(
                   height: 200, // Adjust height according to your needs
@@ -331,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                         onTap: () {
                           setState(() {
                             sourcelocation_name = placesListSource[index]['display_name'];
-                            sourcelatlng = LatLng(double.parse(placesListSource[index]['lat']), 
+                            sourcelatlng = LatLng(double.parse(placesListSource[index]['lat']),  // see carefully
                                 double.parse(placesListSource[index]['lon']));
                             _sourceController.text = sourcelocation_name!;
                             _showSuggest = false;
@@ -348,8 +355,10 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(10)),
                 child: TextFormField(
                   onTap: () {
-                    destinationTextField = true;
-                    sourceTextField = false;
+                    setState(() {  // setState so that when user click another textfield other field listbuilder close
+                      destinationTextField = true;
+                      sourceTextField = false;
+                    });
                   },
                   controller: _destinationController,
                   decoration: InputDecoration(
