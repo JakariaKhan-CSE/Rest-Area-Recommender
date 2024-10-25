@@ -37,6 +37,8 @@ class _ShowRestAreaState extends State<ShowRestArea> {
     'assets/icon/petrol_station.png',
     'assets/icon/mosque.png'
   ];
+
+  // image ke icon e convert kore dibe (unsigned 8 bit)
   Future<Uint8List?> getByteFromAssets(String path, int width) async {
     try {
       // print("Loading image from path: $path");
@@ -50,7 +52,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
           ?.buffer
           .asUint8List();
     } catch (e) {
-      print("Error loading image: $e");
+      // print("Error loading image: $e");
       return null;
     }
   }
@@ -63,7 +65,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
   }
 
   Future<void> _setPolyline() async {
-    // print('polyline call');
+    // source to destination polyline draw korbe (real stree)
     final url = Uri.parse(
         'https://router.project-osrm.org/route/v1/driving/${widget.sourceLatLng.longitude},${widget.sourceLatLng.latitude};${widget.destinationLatLng.longitude},${widget.destinationLatLng.latitude}?geometries=geojson');
 
@@ -80,12 +82,12 @@ class _ShowRestAreaState extends State<ShowRestArea> {
       _addMarkers();
       setState(() {});
     } else {
-      print('Failed to fetch polyline: ${response.statusCode}');
+      // print('Failed to fetch polyline: ${response.statusCode}');
     }
   }
 
   _addMarkers() async {
-    // print('add marker call');
+
     //source marker
     markers.add(
         Marker(
@@ -146,14 +148,13 @@ class _ShowRestAreaState extends State<ShowRestArea> {
               );
             }, icon: const Icon(Icons.location_on,color: Colors.red,size: 40,))
         ));
+    // custom marker generate korbe based on 0-9 index List each row
     // print("csv file length is: ${widget.csvListData.length}");  //work well
     for(int i=0, j=0; i<widget.csvListData.length; i++, j++)
     {
       // print("9 number index: ${widget.csvListData[i][9]}  12 number index: ${widget.csvListData[i][12]}");
 
       LatLng point = LatLng(widget.csvListData[i][9], widget.csvListData[i][12]);
-      // LatLng point = widget.checkPoints[j];
-    //  LatLng point = LatLng(widget.sourceLatLng as double, widget.destinationLatLng as double); // this is dummy delete later
 
       if (_isPointNearPolyline(point)) {
 
@@ -440,8 +441,8 @@ class _ShowRestAreaState extends State<ShowRestArea> {
       yy = y1 + param * D;
     }
 
-    double dx = x0 - xx;
-    double dy = y0 - yy;
+    // double dx = x0 - xx;
+    // double dy = y0 - yy;
 
     return _calculateDistance(LatLng(x0, y0), LatLng(xx, yy));
   }
@@ -464,7 +465,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
     return degrees * pi / 180;
   }
 
-
+// facility show korbe with place name
   void _showFacilityDialog(BuildContext context, List<dynamic> facilityData) {
     // Extract the place name from the List data (assuming it's at index 10)
     String placeName = facilityData[10].toString();
@@ -533,7 +534,7 @@ class _ShowRestAreaState extends State<ShowRestArea> {
     return Scaffold(
       appBar: AppBar(title: const Text('Rest Areas Map')),
       body: FlutterMap(
-        mapController: _mapController,
+        mapController: _mapController,  // needed map controller
         options: MapOptions(
           initialCenter: widget.sourceLatLng,
           initialZoom: 13.0,
