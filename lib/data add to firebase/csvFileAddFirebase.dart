@@ -83,7 +83,10 @@ for(var i=1; i<csvData.length; i++)
     return Scaffold(
       appBar: AppBar(title: const Text('Csv data store in Firebase'),centerTitle: true,),
       body: Center(
-        child: ElevatedButton(onPressed: _loadCSVtoFirebase, child: const Text('CSV file save Firebase')),
+        child: ElevatedButton(onPressed: (){
+          print('Click');
+          _loadCSVtoFirebase();
+        }, child: const Text('CSV file save Firebase')),
       ),
     );
   }

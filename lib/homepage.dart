@@ -13,6 +13,7 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -22,7 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<List<dynamic>> csvData = [];
-  List<LatLng> checkPoints = [];
+  // List<LatLng> checkPoints = [];
   bool _showSuggest = true;
   bool _showSuggest1 = true;
   final TextEditingController _destinationController = TextEditingController();
@@ -107,11 +108,12 @@ class _HomePageState extends State<HomePage> {
     try {
       // References to the collections
       CollectionReference collectionReference =  FirebaseFirestore.instance.collection('alldata');
-      CollectionReference checkpointReference = FirebaseFirestore.instance.collection('checkpoints');
+    //  CollectionReference checkpointReference = FirebaseFirestore.instance.collection('checkpoints');
 
 
       // Fetch all documents from 'alldata' collection
       QuerySnapshot allDatasnapShot = await collectionReference.get();
+      // print('allDatasnapShot length: ${allDatasnapShot.docs.length}');  // work well
       // csvData.add([
       //   doc.id, // Add document ID if needed
       //   ...doc.data().values, // Add all values of the document
@@ -122,22 +124,52 @@ class _HomePageState extends State<HomePage> {
         {
           // Cast doc data to a Map and extract values
           final data = doc.data() as Map<String, dynamic>;
-          csvData.add([
-           ...data.values     // Add all values of the document
+          // print("data is: $data");  // this line work well
+
+          final publicToilet = data['public_toilet'];
+          final hospital = data['hospital'];
+          final park = data['park'];
+          final shoppingMall = data['shopping_mall'];
+          final hotel = data['hotel'];
+          final restaurant = data['restaurant'];
+          final petrolStation = data['petrol_station'];
+          final mosque = data['mosque'];
+          final others = data['others'];
+
+          final latitude = data['latitude'];
+          final nameOfThePalace = data['name_of_the_palace'];
+          final location = data['location'];
+          final longitude = data['longitude'];
+
+          final separateFemaleWashroom = data['separate_female_washroom'];
+          final handicappedWashroomFacility = data['handicapped_washroom_facility'];
+          final kidsFeedingCorner = data['kids_feeding_corner'];
+          final separateFemalePrayerRoom = data['separate_female_prayer_room'];
+          final kidsAndWomenRefreshingArea = data['kids_and_women_refreshing_area'];
+          final otherss = data['otherss'];
+// be careful to add data index in 2D list
+          csvData.add([  // this is importnat ignore to get error next page
+            publicToilet, hospital, park, shoppingMall, hotel, restaurant, petrolStation, mosque, others,
+            latitude, nameOfThePalace, location, longitude, separateFemaleWashroom, handicappedWashroomFacility,
+            kidsFeedingCorner, separateFemalePrayerRoom, kidsAndWomenRefreshingArea, otherss
           ]);
+          // double latitude = data['latitude'];
+          // double longitude = data['longitude'];
+          // checkPoints.add(LatLng(latitude, longitude));
         }
 
-      // Fetch all documents from 'checkpoints' collection
-      QuerySnapshot checkPointSnapshot = await checkpointReference.get();
-      for(var doc in checkPointSnapshot.docs)
-        {
-          final data = doc.data() as Map<String,dynamic>;
-          // the document contains 'lat' and 'lon' fields
-          double latitude = data['lat'];
-          double longitude = data['lng'];
-          // Add LatLng point to the checkPoints list
-          checkPoints.add(LatLng(latitude, longitude));
-        }
+// checkpoint document and alldata document mismatch occur
+      // // Fetch all documents from 'checkpoints' collection
+      // QuerySnapshot checkPointSnapshot = await checkpointReference.get();
+      // for(var doc in checkPointSnapshot.docs)
+      //   {
+      //     final data = doc.data() as Map<String,dynamic>;
+      //     // the document contains 'lat' and 'lon' fields
+      //     double latitude = data['lat'];
+      //     double longitude = data['lng'];
+      //     // Add LatLng point to the checkPoints list
+      //     checkPoints.add(LatLng(latitude, longitude));
+      //   }
 
       // Output the fetched data for testing purposes
       // print('CSV Data: $csvData');
@@ -409,7 +441,7 @@ class _HomePageState extends State<HomePage> {
                             _loadCSVFromFirebase();
                           }
                           return ShowRestArea(
-                            checkPoints: checkPoints,
+                            // checkPoints: checkPoints,
                             sourceLatLng: sourcelatlng!,
                             destinationLatLng: destinationlatlng!,
                             csvListData: csvData, // Pass your actual CSV data here

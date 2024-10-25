@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:rest_area_recommended/homepage.dart';
 
 
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
