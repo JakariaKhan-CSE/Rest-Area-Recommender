@@ -18,9 +18,9 @@ class _LoginPageState extends State<LoginPage> {
           UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
               email: email.text.trim(),
               password: password.text.trim());
-          var authCredential = userCredential.user;
+          User? authCredential = userCredential.user;
 
-          if(authCredential!.uid.isNotEmpty)
+          if(authCredential != null)
             {
               final SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setBool('loggedIn', true);  // use cache memory so that user not need to everytime logged in

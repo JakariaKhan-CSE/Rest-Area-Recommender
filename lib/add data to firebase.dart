@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,7 +21,9 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
         child: IconButton(onPressed: ()async{
           // remove cache memory for logout
           final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('loggedIn', false);
+          await prefs.clear();  // cache memory clean
+          // await prefs.setBool('loggedIn', false);
+          await FirebaseAuth.instance.signOut();  // also firebase logout
           // go to login page
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
         },icon: Icon(Icons.logout,size: 20,color: Colors.orangeAccent,),),)
