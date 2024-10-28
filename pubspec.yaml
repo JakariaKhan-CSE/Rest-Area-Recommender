@@ -55,6 +55,7 @@ dependencies:
   animate_do: ^3.3.4
   latlong2: ^0.9.1
   flutter_map: ^7.0.2
+  shared_preferences: ^2.3.2
 
 
 

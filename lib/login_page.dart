@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rest_area_recommended/add%20data%20to%20firebase.dart';
 import 'package:rest_area_recommended/forgot%20password.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -16,16 +17,18 @@ class _LoginPageState extends State<LoginPage> {
         {
           UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
               email: email.text.trim(),
-              password: password.text);
+              password: password.text.trim());
           var authCredential = userCredential.user;
 
           if(authCredential!.uid.isNotEmpty)
             {
+              final SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('loggedIn', true);  // use cache memory so that user not need to everytime logged in
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AddDataFirebase(),));
             }
           else
             {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid not uuid user or password'),backgroundColor: Colors.red,));
             }
         }catch(e)
     {
@@ -35,12 +38,15 @@ class _LoginPageState extends State<LoginPage> {
   final _formkey = GlobalKey<FormState>();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
+  bool obSecure = true;
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
+    // Disposed Controllers Properly: Disposed TextEditingController before calling super.dispose().
+
     email.dispose();
     password.dispose();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -115,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                                 validator: (value){
                                   if(value!.isEmpty) {
                                     return "Enter your email";
-                                  return null;
+
                                   }
                                   return null;
                                 },
@@ -132,8 +138,14 @@ class _LoginPageState extends State<LoginPage> {
                                   border: Border(bottom: BorderSide(color: Colors.grey.shade100))
                               ),
                               child: TextFormField(
+                                obscureText: obSecure,
                                 controller: password,
                                 decoration: InputDecoration(
+                                  suffixIcon: IconButton(onPressed: (){
+                                    setState(() {
+                                      obSecure = !obSecure;  // password show and hide
+                                    });
+                                  },icon: obSecure?Icon(Icons.visibility_off):Icon(Icons.visibility),),
                                     border: InputBorder.none,
                                     hintStyle: TextStyle(color: Colors.grey.shade400),
                                     hintText: 'Password'

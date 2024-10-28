@@ -9,9 +9,12 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rest_area_recommended/login_page.dart';
 import 'package:rest_area_recommended/showRestArea.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
+
+import 'add data to firebase.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -22,6 +25,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool loggedIn = false;
   List<List<dynamic>> csvData = [];
   // List<LatLng> checkPoints = [];
   bool _showSuggest = true;
@@ -45,6 +49,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    loadCacheMemory();  // load loggedIn data in shared preference
    // _loadCSV();
     _loadCSVFromFirebase(); // when app open it gets data from firebase
     _destinationController.addListener(() => onChangeTarget(_destinationController.text));
@@ -53,6 +58,11 @@ class _HomePageState extends State<HomePage> {
 
     // Initialize Hive box
     destinationBox = Hive.box('destinations');
+  }
+
+  void loadCacheMemory()async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    loggedIn= await prefs.getBool('loggedIn')??false;
   }
 
 // return device current position
@@ -277,13 +287,18 @@ class _HomePageState extends State<HomePage> {
         elevation: 10,
         actions: [
           PopupMenuButton(
-            onSelected: (value) {
+            onSelected: (value) async{
               if (value == 'home') {
                 // open home page
                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
               } else if (value == 'login') {
-                // open login functionality
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                if(loggedIn){  // if user loogedIn data in cache memory redirect to add page
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AddDataFirebase(),));
+                }
+                else{
+                  // open login functionality
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                }
               } else if (value == 'about') {
                 // show developer about
               }
