@@ -280,10 +280,10 @@ class _HomePageState extends State<HomePage> {
             onSelected: (value) {
               if (value == 'home') {
                 // open home page
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HomePage()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
               } else if (value == 'login') {
                 // open login functionality
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
               } else if (value == 'about') {
                 // show developer about
               }
