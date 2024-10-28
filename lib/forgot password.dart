@@ -107,7 +107,7 @@ setState(() {
               height: 20,
             ),
             ElevatedButton(
-                onPressed: sendResetLink,
+                onPressed: isEnabled ? sendResetLink : null,  // when send email link button also disabled
                 child: const Text('Send Reset Link'))
           ],
         ),
