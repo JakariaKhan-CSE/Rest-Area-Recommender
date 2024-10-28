@@ -11,6 +11,7 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController email = TextEditingController();
+  bool isEnabled = true;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -34,7 +35,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   Future<void> sendResetLink()async{
-    print('click');
+    // print('click');
     final userEmail = email.text.trim();
     if(userEmail.isEmpty)
       {
@@ -50,15 +51,22 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     bool isRegistered = await isUserRegistered(userEmail);
     if(isRegistered)
       {
-        print('registered user');
+        // print('registered user');
         try{
           await FirebaseAuth.instance
               .sendPasswordResetEmail(email: userEmail)
-              .then((value) => ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(
-            content: Text('Reset link send successfully'),
-            backgroundColor: Colors.green,
-          )))
+              .then((value) {
+                email.clear();
+                email.text = 'Please Check your email';
+setState(() {
+  isEnabled = false; // when send email this controller is disabled
+});
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(
+              content: Text('Reset link send successfully'),
+              backgroundColor: Colors.green,
+            ));
+          })
               .catchError((e) => ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(
             content: Text('Cannot Send Reset Link'),
@@ -89,6 +97,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: TextFormField(
+                enabled: isEnabled,  // when send email this controller is disabled
                 controller: email,
                 decoration: const InputDecoration(
                     hintText: 'Enter your email', border: OutlineInputBorder()),
@@ -98,10 +107,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               height: 20,
             ),
             ElevatedButton(
-                onPressed: (){
-                  print('btn clickkkkk');
-                  sendResetLink();
-                },
+                onPressed: sendResetLink,
                 child: const Text('Send Reset Link'))
           ],
         ),
