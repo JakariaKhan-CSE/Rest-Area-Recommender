@@ -7,6 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:rest_area_recommended/about_developer.dart';
 import 'package:rest_area_recommended/login_page.dart';
 import 'package:rest_area_recommended/showRestArea.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -301,6 +302,7 @@ class _HomePageState extends State<HomePage> {
                 }
               } else if (value == 'about') {
                 // show developer about
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutDeveloperPage()));
               }
             },
             itemBuilder: (context) => [
