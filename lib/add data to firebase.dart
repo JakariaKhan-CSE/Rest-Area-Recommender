@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rest_area_recommended/homepage.dart';
@@ -34,9 +35,78 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
   List<String> typePlace = ['Public toilet', 'Hospital', 'Park', 'Shopping mall', 'Hotel', 'Restaurant',
     'Petrol Station', 'Mosque', 'Others'
   ];
-  String typePlaceValue = "Select Place";
+  //String typePlaceValue = "Select Place";
+  String typePlaceValue = "Public toilet";
   final _key = GlobalKey<FormState>();
+Future<void> saveDataFirebase()async{
 
+   // no need to add checkpoints collection beacuse my app analysis only alldata collection get latlng from here
+   // create firebase collection so that store data
+   final CollectionReference alldata = FirebaseFirestore.instance.collection('alldata');
+   // use this map so that easily added to firebase one document all keys
+   var record ={
+     "public_toilet" : typePlaceValue,
+     "hospital":typePlaceValue,
+     "park":typePlaceValue,
+     "shopping_mall":typePlaceValue,
+     "hotel":typePlaceValue,
+     "restaurant":typePlaceValue,
+     "petrol_station":typePlaceValue,
+     "mosque":typePlaceValue,
+     "others":typePlaceValue,
+     "name_of_the_palace": nameOfPlaceController.text,
+     "latitude":double.parse(latitudeController.text.trim()),  // convert latitude text to double data also use trim data
+     "longitude":double.parse(longitudeController.text.trim()),
+     "location":locationController.text,
+     "separate_female_washroom":_Separate_female_washroom==1?"Yes":"No",
+     "handicapped_washroom_facility":_Handicapped_washroom_facility==1?"Yes":"No",
+     "kids_feeding_corner":_Kids_Feeding_corner==1?"Yes":"No",
+     "separate_female_prayer_room": _Separate_female_prayer_room==1?"Yes":"No",
+     "kids_and_women_refreshing_area":_kids_and_women_refreshing_area==1?"Yes":"No",
+     "otherss":_Others==1?"Yes":"No",  // see creafully
+
+   };
+   // Entire map ta 1 ta document akare save hove firestore database a
+   alldata.add(record).then((result){
+     // when data successfully write in firestore database then clear all textediting controller
+     _resetState();
+     // show successfull message
+     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+       content: Text('Data Save to Database'),
+       backgroundColor: Colors.green,
+     ));
+   }).catchError((e){
+     // show unsuccessfull message
+     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+       content: Text('Can not Save Data to Database'),
+       backgroundColor: Colors.red,
+     ));
+   });
+
+
+}
+  void _resetState() {
+    setState(() {
+      nameOfPlaceController.clear();
+      locationController.clear();
+      latitudeController.clear();
+      longitudeController.clear();
+      _Separate_female_washroom = 1;   // when user No select this value setState is 2
+      _Handicapped_washroom_facility = 1;
+      _Kids_Feeding_corner  = 1;
+      _Separate_female_prayer_room  = 1;
+      _kids_and_women_refreshing_area  = 1;
+      _Others  = 1;
+    });
+  }
+  @override
+  void dispose() {
+    nameOfPlaceController.dispose();
+    locationController.dispose();
+    latitudeController.dispose();
+    longitudeController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -422,6 +492,10 @@ validator: (value) {
                         onPressed: (){
                           // data save to firestore database
                           // latlng data must convert to double when save to database
+if(_key.currentState!.validate())
+  {
+    saveDataFirebase();
+  }
                         }, child: Text('Save Data to Firebase')),
                   ),
                 )
