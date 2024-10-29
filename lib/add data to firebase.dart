@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rest_area_recommended/homepage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'login_page.dart';
@@ -40,6 +41,10 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Add Data Firebase"),centerTitle: true,
+      // home icon when click go to homepage
+        leading: IconButton(onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+        },icon: Icon(Icons.home,size: 30,color: Colors.blue,),),
       actions: [
         Padding(padding: EdgeInsets.only(right: 5),
         child: IconButton(onPressed: ()async{
@@ -88,7 +93,13 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
                       color: Colors.grey.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(10)),
                   child: TextFormField(
-
+validator: (value) {
+  if(value!.isEmpty)
+    {
+      return "Name of the Place Required";
+    }
+  return null;
+},
                     controller: nameOfPlaceController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -105,7 +116,13 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
                       color: Colors.grey.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(10)),
                   child: TextFormField(
-
+                    validator: (value) {
+                      if(value!.isEmpty)
+                      {
+                        return "Map Location Required";
+                      }
+                      return null;
+                    },
                     controller: locationController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -122,14 +139,20 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
                       color: Colors.grey.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(10)),
                   child: TextFormField(
-
+                    validator: (value) {
+                      if(value!.isEmpty)
+                      {
+                        return "Latitude Required";
+                      }
+                      return null;
+                    },
                     controller: latitudeController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       labelText: "Latitude",
-                      hintText: "type latitude ",
+                      hintText: "type latitude value",
                     ),
                   ),
                 ),
@@ -139,14 +162,20 @@ class _AddDataFirebaseState extends State<AddDataFirebase> {
                       color: Colors.grey.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(10)),
                   child: TextFormField(
-
+                    validator: (value) {
+                      if(value!.isEmpty)
+                      {
+                        return "Longitude Required";
+                      }
+                      return null;
+                    },
                     controller: longitudeController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       labelText: "Longitude",
-                      hintText: "type longitude ",
+                      hintText: "type longitude value",
                     ),
                   ),
                 ),
