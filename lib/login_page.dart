@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rest_area_recommended/add%20data%20to%20firebase.dart';
 import 'package:rest_area_recommended/forgot%20password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -12,29 +13,41 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Future<void> login(BuildContext context)async{
-    try
-        {
-          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-              email: email.text.trim(),
-              password: password.text.trim());
-          User? authCredential = userCredential.user;
+  Future<void> login(BuildContext context) async {
+    try {
 
-          if(authCredential != null)
-            {
-              final SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('loggedIn', true);  // use cache memory so that user not need to everytime logged in
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AddDataFirebase(),));
-            }
-          else
-            {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid not uuid user or password'),backgroundColor: Colors.red,));
-            }
-        }catch(e)
-    {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid user or password'),backgroundColor: Colors.red,));
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: email.text.trim(), password: password.text.trim());
+      User? authCredential = userCredential.user;
+      // print('authCredential is: $authCredential');
+      /*
+      authCredential is: User(displayName: null, email: mdjakariaibnaazamkhan@gmail.com, isEmailVerified: true, isAnonymous: false, metadata: UserMetadata(creationTime: 2024-10-28 16:04:01.826Z, lastSignInTime: 2024-10-29 02:38:57.794Z), phoneNumber: null, photoURL: null, providerData, [UserInfo(displayName: null, email: mdjakariaibnaazamkhan@gmail.com, phoneNumber: null, photoURL: null, providerId: password, uid: mdjakariaibnaazamkhan@gmail.com)], refreshToken: null, tenantId: null, uid: RNSGqWcvvZYTCG3p7o7yTnFVhsy1)
+       */
+      if (authCredential != null) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('loggedIn',
+            true); // use cache memory so that user not need to everytime logged in
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddDataFirebase(),
+            ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Invalid not uuid user or password'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    } catch (e) {
+      // print('catch block. Error occur');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Invalid user or password'),
+        backgroundColor: Colors.red,
+      ));
     }
   }
+
   final _formkey = GlobalKey<FormState>();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -48,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     password.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,29 +75,33 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage('assets/images/login background.jpg'),
-                        fit: BoxFit.cover // very important image ta full display use korar jonno
-                    )
-                ),
+                        fit: BoxFit
+                            .cover // very important image ta full display use korar jonno
+                        )),
                 child: Stack(
                   children: [
-
-                    Positioned(child: FadeInUpBig(duration: const Duration(milliseconds: 1600),child: Container(
-                      margin: const EdgeInsets.only(top: 50),
-                      child: const Center(
-                        child: Text('Login',style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 40,
-                            fontWeight: FontWeight.w700,
-                          letterSpacing: 2
-                        ),),
+                    Positioned(
+                        child: FadeInUpBig(
+                      duration: const Duration(milliseconds: 1600),
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 50),
+                        child: const Center(
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 40,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 2),
+                          ),
+                        ),
                       ),
-                    ),)
-                    )
+                    ))
                   ],
                 ),
               ),
-              Padding(padding: const EdgeInsets.all(20),
-
+              Padding(
+                padding: const EdgeInsets.all(20),
                 child: Form(
                   key: _formkey,
                   child: Column(
@@ -96,113 +114,120 @@ class _LoginPageState extends State<LoginPage> {
                             boxShadow: [
                               BoxShadow(
                                   color: Colors.indigo.shade200,
-                                  offset: const Offset(0,10),
-                                  blurRadius: 20
-                              )
-                            ]
-                        ),
+                                  offset: const Offset(0, 10),
+                                  blurRadius: 20)
+                            ]),
                         child: Column(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border: Border(bottom: BorderSide(color: Colors.grey.shade100))
-                              ),
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: Colors.grey.shade100))),
                               child: TextFormField(
-
                                 controller: email,
                                 decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintStyle: TextStyle(color: Colors.grey.shade400),
-                                    hintText: 'Type email here',
-
+                                  border: InputBorder.none,
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey.shade400),
+                                  hintText: 'Type email here',
                                 ),
-                                validator: (value){
-                                  if(value!.isEmpty) {
+                                validator: (value) {
+                                  if (value!.isEmpty) {
                                     return "Enter your email";
-
                                   }
                                   return null;
                                 },
-
-
                               ),
                             ),
-                            const SizedBox(height: 2,),
-
+                            const SizedBox(
+                              height: 2,
+                            ),
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border: Border(bottom: BorderSide(color: Colors.grey.shade100))
-                              ),
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: Colors.grey.shade100))),
                               child: TextFormField(
                                 obscureText: obSecure,
                                 controller: password,
                                 decoration: InputDecoration(
-                                  suffixIcon: IconButton(onPressed: (){
-                                    setState(() {
-                                      obSecure = !obSecure;  // password show and hide
-                                    });
-                                  },icon: obSecure?Icon(Icons.visibility_off):Icon(Icons.visibility),),
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          obSecure =
+                                              !obSecure; // password show and hide
+                                        });
+                                      },
+                                      icon: obSecure
+                                          ? Icon(Icons.visibility_off)
+                                          : Icon(Icons.visibility),
+                                    ),
                                     border: InputBorder.none,
-                                    hintStyle: TextStyle(color: Colors.grey.shade400),
-                                    hintText: 'Password'
-                                ),
-                                validator: (value){
-                                  if(value!.isEmpty) {
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey.shade400),
+                                    hintText: 'Password'),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
                                     return "Enter your password";
-                                  return null;
+                                    return null;
                                   }
                                   return null;
                                 },
                               ),
                             ),
-
-
                           ],
                         ),
                       ),
-                      const SizedBox(height: 30,),
+                      const SizedBox(
+                        height: 30,
+                      ),
                       GestureDetector(
-                        onTap: (){
-
-                          if(_formkey.currentState!.validate())
-                            {
-                              // go to add form page which admin can add data
-login(context);
-                            }
+                        onTap: () {
+                          if (_formkey.currentState!.validate()) {
+                            // go to add form page which admin can add data
+                            login(context);
+                          }
                         },
                         child: Container(
                           height: 50,
                           decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [
-                                    Colors.blue,
-
-                                    Colors.green,
-                                    Colors.yellowAccent
-                                  ]
-
-                              )
+                              gradient: LinearGradient(colors: [
+                            Colors.blue,
+                            Colors.green,
+                            Colors.yellowAccent
+                          ])),
+                          child: const Center(
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ),
                           ),
-                          child: const Center(child: Text('Login',style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),),),
                         ),
                       ),
-                      const SizedBox(height: 50,),
-                      FadeInUp(duration: const Duration(seconds: 2),child: GestureDetector(
-                        onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ForgotPassword(),));
-                        },
-                        child: const Text('Forgot Password?',style: TextStyle(
-                            color: Colors.indigo
-                        ),),
-                      ))
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      FadeInUp(
+                          duration: const Duration(seconds: 2),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const ForgotPassword(),
+                              ));
+                            },
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(color: Colors.indigo),
+                            ),
+                          ))
                     ],
                   ),
                 ),
